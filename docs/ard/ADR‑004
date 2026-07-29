@@ -1,0 +1,27 @@
+# ADR-004 — Estructura del backend con FastAPI
+
+## Fecha
+29/07/2026
+
+## Contexto
+El backend debe ser modular, rápido y fácil de integrar con el frontend.
+
+## Decisión
+Usar FastAPI con estructura basada en módulos: routes, controllers, models, schemas y utils.
+
+## Razones
+- FastAPI es rápido, moderno y compatible con Pydantic.
+- Separar rutas, modelos y lógica de negocio mejora la mantenibilidad.
+- Facilita la creación de APIs limpias y escalables.
+- Permite añadir autenticación, validación y documentación automática.
+
+## Alternativas descartadas
+- Flask (menos estructurado).
+- Django (excesivo para una API modular).
+
+## Consecuencias
+- Backend profesional y escalable.
+- API clara y fácil de consumir desde React.
+
+## Estado
+Aprobado.

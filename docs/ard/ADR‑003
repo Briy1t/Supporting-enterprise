@@ -1,0 +1,29 @@
+# ADR-003 — Estructura del frontend con React + Vite
+
+## Fecha
+29/07/2026
+
+## Contexto
+La plataforma Supporting Enterprise requiere una interfaz modular, escalable y fácil de mantener.
+
+## Decisión
+Crear una estructura de frontend basada en React + Vite con separación por áreas del negocio.
+
+## Razones
+- React permite modularidad y reutilización de componentes.
+- Vite ofrece velocidad y simplicidad en desarrollo.
+- Separar páginas por áreas (Clientes, Técnicos, Servicios, Alertas, Administración) facilita la escalabilidad.
+- Mantener carpetas para assets, components, context, router y services.
+
+## Alternativas descartadas
+- Usar CRA (Create React App).
+- Usar Next.js (excesivo para este proyecto inicial).
+
+## Consecuencias
+- Frontend organizado de forma profesional.
+- Mayor claridad para futuros desarrolladores.
+- Facilita integración con backend.
+
+## Estado
+Aprobado.
+

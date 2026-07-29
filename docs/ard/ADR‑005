@@ -1,0 +1,27 @@
+# ADR-005 — Organización modular por áreas del negocio
+
+## Fecha
+29/07/2026
+
+## Contexto
+La plataforma Supporting Enterprise tiene áreas funcionales claras: Clientes, Técnicos, Servicios, Alertas y Administración.
+
+## Decisión
+Organizar tanto el frontend como el backend siguiendo la misma estructura modular.
+
+## Razones
+- Facilita la trazabilidad entre frontend y backend.
+- Permite escalar cada área de forma independiente.
+- Mejora la claridad del proyecto.
+- Facilita la documentación y el mantenimiento.
+
+## Alternativas descartadas
+- Estructura monolítica.
+- Estructura por componentes sin relación con áreas del negocio.
+
+## Consecuencias
+- Proyecto más ordenado.
+- Desarrollo más rápido y limpio.
+
+## Estado
+Aprobado.

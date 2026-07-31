@@ -1,5 +1,6 @@
 import "../styles/layout.css";
 import Sidebar from "../components/Sidebar";
+import Dashboard from "../components/Dashboard";
 
 const Index = () => {
     return (
@@ -9,16 +10,15 @@ const Index = () => {
             <main className="layout-content">
 
                 <div className="top-panel">
-                    <h1>SUPPORTING 🫴</h1>
                     <h2>Infraestructura Segura - Rendimiento Garantizado</h2>
                     <p>Soporte IT profesional, hardening avanzado y monitorización continua para empresas modernas.</p>
                 </div>
 
-                {/* Aquí irá el panel general (dashboard) */}
-
+                <Dashboard />
             </main>
         </div>
     );
 };
 
 export default Index;
+

@@ -86,11 +86,7 @@
     background: #dcdcdc;
 }
 
-.volver-container {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 30px;
-}
+
 
 .btn-volver {
     background: #0b111e;

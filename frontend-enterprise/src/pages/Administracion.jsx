@@ -1,9 +1,19 @@
-import "../styles/administracion.css";
+import "../styles/administracion2.css";
+import { Link } from "react-router-dom";
+
 
 export default function Administracion() {
+
+  const descartarSolicitud = async (id) => {
+    await fetch(`http://localhost:8000/solicitudes/${id}`, {
+      method: "DELETE"
+    });
+
+    window.location.reload();
+  };
   return (
     <div className="page admin-page">
-      <h1 className="page-title">Administración</h1>
+      <h1 className="page-title">Administración - SUPPORTING 🫴</h1>
 
       {/* Sección: Solicitudes desde la web */}
       <section className="admin-section">
@@ -29,8 +39,16 @@ export default function Administracion() {
                 <td>juan@techcorp.com</td>
                 <td>Interesado en monitorización</td>
                 <td>
-                  <button className="btn-small">Crear Usuario</button>
-                  <button className="btn-small">Descartar</button>
+                <button
+                  className="btn-small"
+                  onClick={() => window.location.href = "/crear-cliente"}
+                >
+                  Crear Usuario
+                </button>
+                <button className="btn-small" onClick={() => descartarSolicitud(id)}>
+                  Descartar
+                </button>
+
                 </td>
               </tr>
             </tbody>
@@ -70,6 +88,12 @@ export default function Administracion() {
           </table>
         </div>
       </section>
+        <div className="volver-container">
+        <button className="btn-volver" onClick={() => window.history.back()}>
+          ← Volver
+        </button>
+      </div>
     </div>
+    
   );
 }

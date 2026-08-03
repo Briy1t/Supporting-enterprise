@@ -3,7 +3,7 @@ import "../styles/clientes.css";
 export default function Clientes() {
   return (
     <div className="page clientes-page">
-      <h1 className="page-title">Clientes</h1>
+      <h1 className="page-title">Clientes - SUPPORTING 🫴</h1>
 
 
       <div className="clientes-table">
@@ -34,6 +34,11 @@ export default function Clientes() {
             </tr>
           </tbody>
         </table>
+      </div>
+      <div className="volver-container">
+        <button className="btn-volver" onClick={() => window.history.back()}>
+          ← Volver
+        </button>
       </div>
     </div>
   );

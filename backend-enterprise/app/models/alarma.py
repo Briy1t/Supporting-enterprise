@@ -1,8 +1,8 @@
+from app.database import Base
 from sqlalchemy import Column, Integer, String, DateTime
 from datetime import datetime
-from app.database import Base
 
-class Alarm(Base):
+class Alarma(Base):
     __tablename__ = "alarmas"
 
     id = Column(Integer, primary_key=True, index=True)

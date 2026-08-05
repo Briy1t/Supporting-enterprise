@@ -1,6 +1,6 @@
+from app.database import Base
 from sqlalchemy import Column, Integer, String, DateTime
 from datetime import datetime
-from app.database import Base
 
 class Lead(Base):
     __tablename__ = "leads"

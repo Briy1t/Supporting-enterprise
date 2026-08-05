@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.schemas.alarm import AlarmCreate, AlarmResponse
-from app.controllers.alarm import (
+from app.schemas.alarma import AlarmaCreate, AlarmaResponse
+from app.controllers.alarma import (
     crear_alarma,
     listar_alarmas,
     obtener_alarma,
@@ -13,15 +13,15 @@ from app.controllers.alarm import (
 
 router = APIRouter(prefix="/alarmas", tags=["Alarmas"])
 
-@router.post("/", response_model=AlarmResponse)
-def crear_alarma_route(data: AlarmCreate, db: Session = Depends(get_db)):
+@router.post("/", response_model=AlarmaResponse)
+def crear_alarma_route(data: AlarmaCreate, db: Session = Depends(get_db)):
     return crear_alarma(db, data.dict())
 
-@router.get("/", response_model=list[AlarmResponse])
+@router.get("/", response_model=list[AlarmaResponse])
 def listar_alarmas_route(db: Session = Depends(get_db)):
     return listar_alarmas(db)
 
-@router.get("/{alarma_id}", response_model=AlarmResponse)
+@router.get("/{alarma_id}", response_model=AlarmaResponse)
 def obtener_alarma_route(alarma_id: int, db: Session = Depends(get_db)):
     alarma = obtener_alarma(db, alarma_id)
     if not alarma:

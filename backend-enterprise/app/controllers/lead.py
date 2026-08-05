@@ -14,10 +14,13 @@ def listar_leads(db: Session):
 def obtener_lead(db: Session, lead_id: int):
     return db.query(Lead).filter(Lead.id == lead_id).first()
 
-def actualizar_estado_lead(db: Session, lead_id: int, nuevo_estado: str):
-    lead = obtener_lead(db, lead_id)
-    if lead:
-        lead.estado = nuevo_estado
-        db.commit()
-        db.refresh(lead)
+
+def actualizar_estado_lead(db: Session, lead_id: int, estado: str):
+    lead = db.query(Lead).filter(Lead.id == lead_id).first()
+    if not lead:
+        return None
+
+    lead.estado = estado
+    db.commit()
+    db.refresh(lead)
     return lead

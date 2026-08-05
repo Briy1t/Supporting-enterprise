@@ -1,14 +1,14 @@
 from pydantic import BaseModel
 
-class TechnicianBase(BaseModel):
+class TecnicoBase(BaseModel):
     nombre: str
     especialidad: str
     disponibilidad: str | None = "disponible"
 
-class TechnicianCreate(TechnicianBase):
+class TecnicoCreate(TecnicoBase):
     pass
 
-class TechnicianResponse(TechnicianBase):
+class TecnicoResponse(TecnicoBase):
     id: int
 
     class Config:

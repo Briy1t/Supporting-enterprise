@@ -1,6 +1,6 @@
+from app.database import Base
 from sqlalchemy import Column, Integer, String, DateTime
 from datetime import datetime
-from app.database import Base
 
 class Ticket(Base):
     __tablename__ = "tickets"

@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.schemas.technician import TechnicianCreate, TechnicianResponse
-from app.controllers.technician import (
+from app.schemas.tecnico import TecnicoCreate, TecnicoResponse
+from app.controllers.tecnico import (
     crear_tecnico,
     listar_tecnicos,
     obtener_tecnico,
@@ -13,15 +13,15 @@ from app.controllers.technician import (
 
 router = APIRouter(prefix="/tecnicos", tags=["Tecnicos"])
 
-@router.post("/", response_model=TechnicianResponse)
-def crear_tecnico_route(data: TechnicianCreate, db: Session = Depends(get_db)):
+@router.post("/", response_model=TecnicoResponse)
+def crear_tecnico_route(data: TecnicoCreate, db: Session = Depends(get_db)):
     return crear_tecnico(db, data.dict())
 
-@router.get("/", response_model=list[TechnicianResponse])
+@router.get("/", response_model=list[TecnicoResponse])
 def listar_tecnicos_route(db: Session = Depends(get_db)):
     return listar_tecnicos(db)
 
-@router.get("/{tecnico_id}", response_model=TechnicianResponse)
+@router.get("/{tecnico_id}", response_model=TecnicoResponse)
 def obtener_tecnico_route(tecnico_id: int, db: Session = Depends(get_db)):
     tecnico = obtener_tecnico(db, tecnico_id)
     if not tecnico:

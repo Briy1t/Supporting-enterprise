@@ -1,14 +1,14 @@
 from pydantic import BaseModel
 
-class ServiceBase(BaseModel):
+class ServicioBase(BaseModel):
     nombre: str
     descripcion: str | None = None
     cliente_id: int
 
-class ServiceCreate(ServiceBase):
+class ServicioCreate(ServicioBase):
     pass
 
-class ServiceResponse(ServiceBase):
+class ServicioResponse(ServicioBase):
     id: int
 
     class Config:

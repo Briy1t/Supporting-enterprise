@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.models.service import Service
+from app.models.servicio import Servicio
 
 def crear_servicio(db: Session, data: dict):
     servicio = Service(**data)
@@ -9,10 +9,10 @@ def crear_servicio(db: Session, data: dict):
     return servicio
 
 def listar_servicios(db: Session):
-    return db.query(Service).all()
+    return db.query(Servicio).all()
 
 def obtener_servicio(db: Session, servicio_id: int):
-    return db.query(Service).filter(Service.id == servicio_id).first()
+    return db.query(Servicio).filter(Servicio.id == servicio_id).first()
 
 def eliminar_servicio(db: Session, servicio_id: int):
     servicio = obtener_servicio(db, servicio_id)

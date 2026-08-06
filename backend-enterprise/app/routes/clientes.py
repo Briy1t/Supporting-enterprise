@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.schemas.user import UserCreate, UserResponse
-from app.controllers.user import (
+from app.schemas.usuario import UserCreate, UserResponse
+from app.controllers.usuario import (
     crear_cliente,
     listar_clientes,
     obtener_cliente,

@@ -1,8 +1,15 @@
 from sqlalchemy.orm import Session
 from app.models.servicio import Servicio
+from app.models.usuario import User
+
+from fastapi import HTTPException
 
 def crear_servicio(db: Session, data: dict):
-    servicio = Service(**data)
+    cliente = db.query(User).filter(User.id == data["cliente_id"]).first()
+    if not cliente:
+        raise HTTPException(status_code=404, detail="Cliente no encontrado")
+
+    servicio = Servicio(**data)
     db.add(servicio)
     db.commit()
     db.refresh(servicio)
@@ -16,7 +23,8 @@ def obtener_servicio(db: Session, servicio_id: int):
 
 def eliminar_servicio(db: Session, servicio_id: int):
     servicio = obtener_servicio(db, servicio_id)
-    if servicio:
-        db.delete(servicio)
-        db.commit()
+    if not servicio:
+        return None
+    db.delete(servicio)
+    db.commit()
     return servicio

@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 
 class AlarmaBase(BaseModel):
@@ -14,5 +14,4 @@ class AlarmaResponse(AlarmaBase):
     estado: str
     fecha: datetime
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

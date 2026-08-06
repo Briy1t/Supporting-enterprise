@@ -14,7 +14,7 @@ SessionLocal = sessionmaker(
 
 Base = declarative_base()
 
-from app.models.user import User
+from app.models.usuario import User
 from app.models.lead import Lead
 from app.models.servicio import Servicio
 from app.models.tecnico import Tecnico

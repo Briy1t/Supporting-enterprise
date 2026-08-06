@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 class ServicioBase(BaseModel):
     nombre: str
@@ -11,5 +11,4 @@ class ServicioCreate(ServicioBase):
 class ServicioResponse(ServicioBase):
     id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

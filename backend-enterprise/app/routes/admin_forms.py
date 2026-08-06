@@ -3,14 +3,14 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.schemas.lead import LeadCreate, LeadResponse
-from app.schemas.user import UserCreate, UserResponse
+from app.schemas.usuario import UserCreate, UserResponse
 from app.controllers.lead import (
     crear_lead,
     listar_leads,
     obtener_lead,
     actualizar_estado_lead
 )
-from app.controllers.user import crear_cliente
+from app.controllers.usuario import crear_cliente
 
 router = APIRouter(prefix="/admin/forms", tags=["Admin - Formularios"])
 

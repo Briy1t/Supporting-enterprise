@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.models.user import User
+from app.models.usuario import User
 
 def crear_cliente(db: Session, data: dict):
     nuevo = User(**data)

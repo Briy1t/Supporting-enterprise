@@ -1,4 +1,8 @@
-# Logs
+.env
+__pycache__/
+*.pyc
+.env.*
+
 logs
 *.log
 npm-debug.log*

@@ -1,18 +1,22 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, EmailStr
 from datetime import datetime
 
-class LeadBase(BaseModel):
-    origen: str
-    nombre: str
-    email: str
+class LeadCreate(BaseModel):
+    empresa: str
+    contacto: str
+    correo: EmailStr
     mensaje: str
+    origen: str = "web"
 
-class LeadCreate(LeadBase):
-    pass
-
-class LeadResponse(LeadBase):
+class LeadResponse(BaseModel):
     id: int
+    empresa: str
+    contacto: str
+    correo: EmailStr
+    mensaje: str
+    origen: str
     fecha: datetime
     estado: str
 
-    model_config = ConfigDict(from_attributes=True)
+    class Config:
+        from_attributes = True

@@ -1,11 +1,11 @@
 from sqlalchemy.orm import Session
 from app.models.servicio import Servicio
-from app.models.usuario import User
+from app.models.cliente import Cliente
 
 from fastapi import HTTPException
 
 def crear_servicio(db: Session, data: dict):
-    cliente = db.query(User).filter(User.id == data["cliente_id"]).first()
+    cliente = db.query(Cliente).filter(Cliente.id == data["cliente_id"]).first()
     if not cliente:
         raise HTTPException(status_code=404, detail="Cliente no encontrado")
 

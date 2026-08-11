@@ -2,8 +2,6 @@ import { useState } from "react";
 import "../styles/administracion2.css";
 
 export default function CrearCliente() {
-
-  // Obtener datos precargados desde la URL
   const params = new URLSearchParams(window.location.search);
 
   const [form, setForm] = useState({
@@ -11,8 +9,7 @@ export default function CrearCliente() {
     contacto: params.get("contacto") || "",
     correo: params.get("correo") || "",
     mensaje: params.get("mensaje") || "",
-    usuario: "",
-    clave: ""
+    lead_id: params.get("lead_id") || null
   });
 
   const handleChange = (e) => {
@@ -22,13 +19,22 @@ export default function CrearCliente() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await fetch("http://localhost:8000/clientes", {
+    await fetch("http://localhost:8001/clientes", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form)
     });
 
     alert("Cliente creado correctamente");
+
+    // Eliminar el lead automáticamente
+    if (form.lead_id) {
+      await fetch(`http://localhost:8001/leads/${form.lead_id}`, {
+        method: "DELETE"
+      });
+    }
+
+    window.location.href = "/administracion";
   };
 
   return (
@@ -36,48 +42,10 @@ export default function CrearCliente() {
       <h1 className="page-title">Crear Cliente</h1>
 
       <form className="form" onSubmit={handleSubmit}>
-        <input
-          name="empresa"
-          placeholder="Empresa"
-          value={form.empresa}
-          onChange={handleChange}
-        />
-
-        <input
-          name="contacto"
-          placeholder="Contacto"
-          value={form.contacto}
-          onChange={handleChange}
-        />
-
-        <input
-          name="correo"
-          placeholder="Correo"
-          value={form.correo}
-          onChange={handleChange}
-        />
-
-        <textarea
-          name="mensaje"
-          placeholder="Mensaje"
-          value={form.mensaje}
-          onChange={handleChange}
-        />
-
-        <input
-          name="usuario"
-          placeholder="Nombre de Usuario"
-          value={form.usuario}
-          onChange={handleChange}
-        />
-
-        <input
-          name="clave"
-          type="password"
-          placeholder="Contraseña"
-          value={form.clave}
-          onChange={handleChange}
-        />
+        <input name="empresa" value={form.empresa} onChange={handleChange} />
+        <input name="contacto" value={form.contacto} onChange={handleChange} />
+        <input name="correo" value={form.correo} onChange={handleChange} />
+        <textarea name="mensaje" value={form.mensaje} onChange={handleChange} />
 
         <button className="btn-primary">Guardar</button>
       </form>

@@ -1,16 +1,34 @@
+import { useState, useEffect } from "react";
 import "../styles/administracion2.css";
-import { Link } from "react-router-dom";
-
 
 export default function Administracion() {
+  const [leads, setLeads] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
 
-  const descartarSolicitud = async (id) => {
-    await fetch(`http://localhost:8000/solicitudes/${id}`, {
+  // Cargar leads desde la plataforma
+  useEffect(() => {
+    fetch("http://localhost:8001/leads")
+      .then(res => res.json())
+      .then(data => setLeads(data))
+      .catch(err => console.error("Error cargando leads:", err));
+  }, []);
+
+  // Cargar usuarios desde la plataforma
+  useEffect(() => {
+    fetch("http://localhost:8001/usuarios")
+      .then(res => res.json())
+      .then(data => setUsuarios(data))
+      .catch(err => console.error("Error cargando usuarios:", err));
+  }, []);
+
+  const descartarSolicitud = async (leadId) => {
+    await fetch(`http://localhost:8001/leads/${leadId}`, {
       method: "DELETE"
     });
 
     window.location.reload();
   };
+
   return (
     <div className="page admin-page">
       <h1 className="page-title">Administración - SUPPORTING 🫴</h1>
@@ -33,24 +51,38 @@ export default function Administracion() {
             </thead>
 
             <tbody>
-              <tr>
-                <td>TechCorp</td>
-                <td>Juan Pérez</td>
-                <td>juan@techcorp.com</td>
-                <td>Interesado en monitorización</td>
-                <td>
-                <button
-                  className="btn-small"
-                  onClick={() => window.location.href = "/crear-cliente"}
-                >
-                  Crear Usuario
-                </button>
-                <button className="btn-small" onClick={() => descartarSolicitud(id)}>
-                  Descartar
-                </button>
+              {leads.length === 0 ? (
+                <tr>
+                  <td colSpan="5">No hay solicitudes pendientes</td>
+                </tr>
+              ) : (
+                leads.map((lead) => (
+                  <tr key={lead.id}>
+                    <td>{lead.empresa}</td>
+                    <td>{lead.contacto}</td>
+                    <td>{lead.correo}</td>
+                    <td>{lead.mensaje}</td>
+                    <td>
+                      <button
+                        className="btn-small"
+                        onClick={() =>
+                          window.location.href =
+                            `/crear-cliente?empresa=${lead.empresa}&contacto=${lead.contacto}&correo=${lead.correo}&mensaje=${lead.mensaje}&lead_id=${lead.id}`
+                        }
+                      >
+                        Crear Usuario
+                      </button>
 
-                </td>
-              </tr>
+                      <button
+                        className="btn-small"
+                        onClick={() => descartarSolicitud(lead.id)}
+                      >
+                        Descartar
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -74,26 +106,34 @@ export default function Administracion() {
             </thead>
 
             <tbody>
-              <tr>
-                <td>jperez</td>
-                <td>Cliente</td>
-                <td>TechCorp</td>
-                <td>Activo</td>
-                <td>
-                  <button className="btn-small">Editar</button>
-                  <button className="btn-small">Desactivar</button>
-                </td>
-              </tr>
+              {usuarios.length === 0 ? (
+                <tr>
+                  <td colSpan="5">No hay usuarios registrados</td>
+                </tr>
+              ) : (
+                usuarios.map((u) => (
+                  <tr key={u.id}>
+                    <td>{u.usuario}</td>
+                    <td>{u.rol}</td>
+                    <td>{u.empresa}</td>
+                    <td>{u.estado}</td>
+                    <td>
+                      <button className="btn-small">Editar</button>
+                      <button className="btn-small">Desactivar</button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
       </section>
-        <div className="volver-container">
+
+      <div className="volver-container">
         <button className="btn-volver" onClick={() => window.history.back()}>
           ← Volver
         </button>
       </div>
     </div>
-    
   );
 }

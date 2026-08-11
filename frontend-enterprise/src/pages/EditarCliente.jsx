@@ -18,7 +18,7 @@ export default function EditarCliente() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await fetch(`http://localhost:8000/clientes/${id}`, {
+    await fetch(`http://localhost:8001/clientes/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form)

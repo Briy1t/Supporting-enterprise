@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.schemas.usuario import UserCreate, UserResponse
-from app.controllers.usuario import (
+from app.schemas.cliente import ClienteCreate, ClienteResponse
+from app.controllers.cliente import (
     crear_cliente,
     listar_clientes,
     obtener_cliente,
@@ -12,15 +12,15 @@ from app.controllers.usuario import (
 
 router = APIRouter(prefix="/clientes", tags=["Clientes"])
 
-@router.post("/", response_model=UserResponse)
-def crear_cliente_route(data: UserCreate, db: Session = Depends(get_db)):
+@router.post("/", response_model=ClienteResponse)
+def crear_cliente_route(data: ClienteCreate, db: Session = Depends(get_db)):
     return crear_cliente(db, data.dict())
 
-@router.get("/", response_model=list[UserResponse])
+@router.get("/", response_model=list[ClienteResponse])
 def listar_clientes_route(db: Session = Depends(get_db)):
     return listar_clientes(db)
 
-@router.get("/{cliente_id}", response_model=UserResponse)
+@router.get("/{cliente_id}", response_model=ClienteResponse)
 def obtener_cliente_route(cliente_id: int, db: Session = Depends(get_db)):
     cliente = obtener_cliente(db, cliente_id)
     if not cliente:

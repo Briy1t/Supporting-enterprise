@@ -8,7 +8,7 @@ class Servicio(Base):
     id = Column(Integer, primary_key=True, index=True)
     nombre = Column(String, nullable=False)         
     descripcion = Column(String, nullable=True)    
-    cliente_id = Column(Integer, ForeignKey("usuarios.id"), nullable=False)
+    cliente_id = Column(Integer, ForeignKey("clientes.id"), nullable=False)
 
-    cliente = relationship("User", back_populates="servicios")
+    cliente = relationship("Cliente", back_populates="servicios")
 

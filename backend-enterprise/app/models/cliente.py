@@ -12,5 +12,6 @@ class Cliente(Base):
     empresa = Column(String, nullable=True)
     servicio = Column(String, nullable=True)
     estado = Column(String, default="activo")
+    lead_id = Column(Integer, nullable=True) 
 
     servicios = relationship("Servicio", back_populates="cliente")

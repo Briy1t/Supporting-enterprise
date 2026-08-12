@@ -4,14 +4,15 @@ from app.schemas.auth_user import AuthCreate
 import bcrypt
 
 def crear_usuario(db: Session, data: AuthCreate):
-    # Validar duplicados
+    
     if db.query(AuthUser).filter(AuthUser.email == data.email).first():
         raise Exception("El correo ya existe")
 
     if db.query(AuthUser).filter(AuthUser.usuario == data.usuario).first():
         raise Exception("El usuario ya existe")
 
-    hashed = bcrypt.hashpw(data.password.encode("utf-8"), bcrypt.gensalt()).decode()
+    hashed = bcrypt.hashpw(data.password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
 
     nuevo = AuthUser(
         usuario=data.usuario,
@@ -30,16 +31,19 @@ def crear_usuario(db: Session, data: AuthCreate):
     return nuevo
 
 
-def login_usuario(db: Session, email: str, password: str):
-    user = db.query(AuthUser).filter(AuthUser.email == email).first()
+def login_usuario(db: Session, usuario: str, password: str):
+    user = db.query(AuthUser).filter(AuthUser.usuario == usuario).first()
 
     if not user:
         raise Exception("Usuario no encontrado")
 
-    if not bcrypt.checkpw(password.encode("utf-8"), user.password.encode("utf-8")):
+    stored_hash = user.password.encode("utf-8") if isinstance(user.password, str) else user.password
+
+    if not bcrypt.checkpw(password.encode("utf-8"), stored_hash):
         raise Exception("Contraseña incorrecta")
 
     if user.estado != "activo":
         raise Exception("Usuario inactivo")
 
     return user
+

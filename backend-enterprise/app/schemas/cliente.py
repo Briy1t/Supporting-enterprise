@@ -6,9 +6,15 @@ class ClienteBase(BaseModel):
     telefono: str | None = None
     empresa: str | None = None
     servicio: str | None = None
+    lead_id: int | None = None
 
-class ClienteCreate(ClienteBase):
-    pass
+
+class ClienteCreate(BaseModel):
+    empresa: str
+    contacto: str
+    correo: str
+    mensaje: str
+    lead_id: int | None = None
 
 class ClienteResponse(ClienteBase):
     id: int

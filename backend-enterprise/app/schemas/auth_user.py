@@ -8,7 +8,7 @@ class AuthCreate(BaseModel):
     empresa: str | None = None
 
 class AuthLogin(BaseModel):
-    email: EmailStr
+    usuario: str
     password: str
 
 class AuthResponse(BaseModel):

@@ -12,9 +12,10 @@ from app.controllers.cliente import (
 
 router = APIRouter(prefix="/clientes", tags=["Clientes"])
 
-@router.post("/", response_model=ClienteResponse)
+@router.post("/")
 def crear_cliente_route(data: ClienteCreate, db: Session = Depends(get_db)):
     return crear_cliente(db, data.dict())
+
 
 @router.get("/", response_model=list[ClienteResponse])
 def listar_clientes_route(db: Session = Depends(get_db)):

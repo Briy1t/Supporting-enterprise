@@ -32,7 +32,7 @@ def crear_usuario_route(data: AuthCreate, db: Session = Depends(get_db)):
 @router.post("/login")
 def login_route(data: AuthLogin, db: Session = Depends(get_db)):
     try:
-        user = login_usuario(db, data.email, data.password)
+        user = login_usuario(db, data.usuario, data.password)
         token = crear_token(user)
         return {
             "status": "OK",

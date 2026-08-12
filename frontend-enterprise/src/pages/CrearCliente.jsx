@@ -19,15 +19,21 @@ export default function CrearCliente() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await fetch("http://localhost:8001/clientes", {
+    const res = await fetch("http://localhost:8001/clientes", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form)
     });
 
-    alert("Cliente creado correctamente");
+    const data = await res.json();
 
-    // Eliminar el lead automáticamente
+    alert(`
+Cliente creado correctamente.
+
+Usuario: ${data.usuario.usuario}
+Contraseña temporal: ${data.password_temporal}
+`);
+
     if (form.lead_id) {
       await fetch(`http://localhost:8001/leads/${form.lead_id}`, {
         method: "DELETE"

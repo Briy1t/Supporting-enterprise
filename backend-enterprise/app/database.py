@@ -19,6 +19,11 @@ from app.models.servicio import Servicio
 from app.models.tecnico import Tecnico
 from app.models.ticket import Ticket
 from app.models.alarma import Alarma
+from app.models.contacto import Contact
+from app.models.demo_guiada import DemoGuiada
+from app.models.acceso_empresas import AccesoEmpresas
+from app.models.integracion import Integracion
+
 
 def get_db():
     db = SessionLocal()

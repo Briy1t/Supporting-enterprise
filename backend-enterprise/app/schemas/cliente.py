@@ -10,14 +10,26 @@ class ClienteBase(BaseModel):
 
 
 class ClienteCreate(BaseModel):
-    empresa: str
     contacto: str
     correo: str
-    mensaje: str
+    empresa: str
+    telefono: str | None = None
+    servicio: list[str] | None = None
     lead_id: int | None = None
+    preferencia: str | None = None
 
-class ClienteResponse(ClienteBase):
+
+class ClienteResponse(BaseModel):
     id: int
+    nombre: str
+    email: str
+    telefono: str | None = None
+    empresa: str
+    servicio: list[str] | None
     estado: str
+    lead_id: int | None = None
+    preferencia: str | None = None
 
     model_config = ConfigDict(from_attributes=True)
+
+

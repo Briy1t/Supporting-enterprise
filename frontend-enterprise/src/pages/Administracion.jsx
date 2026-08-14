@@ -2,41 +2,36 @@ import { useState, useEffect } from "react";
 import "../styles/administracion2.css";
 
 export default function Administracion() {
-  const [leads, setLeads] = useState([]);
-  const [usuarios, setUsuarios] = useState([]);
+  const [formularios, setFormularios] = useState([]);
 
-  // Cargar leads desde la plataforma
-  useEffect(() => {
-    fetch("http://localhost:8001/leads")
+  const cargarFormularios = () => {
+    fetch("http://localhost:8001/clientes/formularios")
       .then(res => res.json())
-      .then(data => setLeads(data))
-      .catch(err => console.error("Error cargando leads:", err));
+      .then(data => setFormularios(data))
+      .catch(err => console.error("Error cargando formularios:", err));
+  };
+
+  useEffect(() => {
+    cargarFormularios();
   }, []);
 
-  // Cargar usuarios desde la plataforma
-  useEffect(() => {
-    fetch("http://localhost:8001/usuarios")
-      .then(res => res.json())
-      .then(data => setUsuarios(data))
-      .catch(err => console.error("Error cargando usuarios:", err));
-  }, []);
-
-  const descartarSolicitud = async (leadId) => {
-    await fetch(`http://localhost:8001/leads/${leadId}`, {
+  const descartarSolicitud = async (form) => {
+    await fetch(`http://localhost:8001/admin/descartar/${form.tipo}/${form.id}`, {
       method: "DELETE"
     });
 
-    window.location.reload();
+    cargarFormularios(); 
   };
 
   return (
     <div className="page admin-page">
       <h1 className="page-title">Administración - SUPPORTING 🫴</h1>
 
-      {/* Sección: Solicitudes desde la web */}
       <section className="admin-section">
         <h2 className="section-title">Solicitudes de Clientes</h2>
-        <p className="section-desc">Clientes que han contactado desde la web y están pendientes de revisión.</p>
+        <p className="section-desc">
+          Clientes que han contactado desde la web y están pendientes de revisión.
+        </p>
 
         <div className="admin-table">
           <table>
@@ -51,75 +46,35 @@ export default function Administracion() {
             </thead>
 
             <tbody>
-              {leads.length === 0 ? (
+              {formularios.length === 0 ? (
                 <tr>
                   <td colSpan="5">No hay solicitudes pendientes</td>
                 </tr>
               ) : (
-                leads.map((lead) => (
-                  <tr key={lead.id}>
-                    <td>{lead.empresa}</td>
-                    <td>{lead.contacto}</td>
-                    <td>{lead.correo}</td>
-                    <td>{lead.mensaje}</td>
+                formularios.map((form) => (
+                  <tr key={form.id}>
+                    <td>{form.empresa}</td>
+                    <td>{form.contacto}</td>
+                    <td>{form.correo}</td>
+                    <td>{form.mensaje}</td>
                     <td>
                       <button
                         className="btn-small"
                         onClick={() =>
                           window.location.href =
-                            `/crear-cliente?empresa=${lead.empresa}&contacto=${lead.contacto}&correo=${lead.correo}&mensaje=${lead.mensaje}&lead_id=${lead.id}`
+                            `/crear-cliente?empresa=${form.empresa}&contacto=${form.contacto}&correo=${form.correo}&mensaje=${form.mensaje}&form_id=${form.id}&form_tipo=${form.tipo}`
                         }
                       >
                         Crear Usuario
                       </button>
 
+                      {/* DESCARTAR */}
                       <button
-                        className="btn-small"
-                        onClick={() => descartarSolicitud(lead.id)}
+                        className="btn-small btn-danger"
+                        onClick={() => descartarSolicitud(form)}
                       >
                         Descartar
                       </button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      {/* Sección: Usuarios creados */}
-      <section className="admin-section">
-        <h2 className="section-title">Usuarios del Sistema</h2>
-        <p className="section-desc">Usuarios internos y clientes con acceso a la plataforma.</p>
-
-        <div className="admin-table">
-          <table>
-            <thead>
-              <tr>
-                <th>Usuario</th>
-                <th>Rol</th>
-                <th>Empresa</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {usuarios.length === 0 ? (
-                <tr>
-                  <td colSpan="5">No hay usuarios registrados</td>
-                </tr>
-              ) : (
-                usuarios.map((u) => (
-                  <tr key={u.id}>
-                    <td>{u.usuario}</td>
-                    <td>{u.rol}</td>
-                    <td>{u.empresa}</td>
-                    <td>{u.estado}</td>
-                    <td>
-                      <button className="btn-small">Editar</button>
-                      <button className="btn-small">Desactivar</button>
                     </td>
                   </tr>
                 ))

@@ -60,7 +60,7 @@ Contraseña temporal: ${data.password_temporal}
         <input name="contacto" value={form.contacto} onChange={handleChange} />
         <input name="correo" value={form.correo} onChange={handleChange} />
         <textarea name="mensaje" value={form.mensaje} onChange={handleChange} />
-
+        <input name="telefono" value={form.telefono} onChange={handleChange} />
         <select multiple value={form.servicios} onChange={handleServicios}>
           <option value="hardening">Hardening</option>
           <option value="monitorizacion">Monitorización</option>

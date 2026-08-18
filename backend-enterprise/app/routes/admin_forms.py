@@ -64,6 +64,7 @@ def actualizar_estado_route(lead_id: int, estado: str, db: Session = Depends(get
     return {"mensaje": "Estado actualizado", "lead": lead}
 
 
+
 @router.post("/{lead_id}/convertir")
 def convertir_lead_route(
     lead_id: int,
@@ -114,7 +115,11 @@ def descartar_lead_route(lead_id: int, db: Session = Depends(get_db)):
     if not lead:
         raise HTTPException(status_code=404, detail="Lead no encontrado")
 
-    lead.estado = "descartado"
+    db.delete(lead)
     db.commit()
 
-    return {"mensaje": "Lead descartado"}
+    return {"mensaje": "Lead eliminado permanentemente"}
+
+
+
+

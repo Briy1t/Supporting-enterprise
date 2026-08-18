@@ -5,7 +5,7 @@ export default function Administracion() {
   const [formularios, setFormularios] = useState([]);
 
   const cargarFormularios = () => {
-    fetch("http://localhost:8001/clientes/formularios")
+    fetch("http://localhost:8001/admin/forms")
       .then(res => res.json())
       .then(data => setFormularios(data))
       .catch(err => console.error("Error cargando formularios:", err));
@@ -16,11 +16,19 @@ export default function Administracion() {
   }, []);
 
   const descartarSolicitud = async (form) => {
-    await fetch(`http://localhost:8001/admin/descartar/${form.tipo}/${form.id}`, {
-      method: "DELETE"
+    await fetch(`http://localhost:8001/admin/forms/${form.id}/descartar`, {
+      method: "POST"
     });
 
     cargarFormularios(); 
+  };
+
+  const cambiarEstado = async (form, nuevoEstado) => {
+    await fetch(`http://localhost:8001/admin/forms/${form.id}/estado?estado=${nuevoEstado}`, {
+      method: "PATCH"
+    });
+
+    cargarFormularios();
   };
 
   return (
@@ -41,6 +49,7 @@ export default function Administracion() {
                 <th>Contacto</th>
                 <th>Correo</th>
                 <th>Mensaje</th>
+                <th>Estado</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -48,7 +57,7 @@ export default function Administracion() {
             <tbody>
               {formularios.length === 0 ? (
                 <tr>
-                  <td colSpan="5">No hay solicitudes pendientes</td>
+                  <td colSpan="6">No hay solicitudes pendientes</td>
                 </tr>
               ) : (
                 formularios.map((form) => (
@@ -57,18 +66,40 @@ export default function Administracion() {
                     <td>{form.contacto}</td>
                     <td>{form.correo}</td>
                     <td>{form.mensaje}</td>
+                    <td>{form.estado}</td>
+
                     <td>
                       <button
                         className="btn-small"
                         onClick={() =>
                           window.location.href =
-                            `/crear-cliente?empresa=${form.empresa}&contacto=${form.contacto}&correo=${form.correo}&mensaje=${form.mensaje}&form_id=${form.id}&form_tipo=${form.tipo}`
+                            `/crear-cliente?empresa=${form.empresa}&contacto=${form.contacto}&correo=${form.correo}&mensaje=${form.mensaje}&form_id=${form.id}&form_tipo=lead`
                         }
                       >
                         Crear Usuario
                       </button>
 
-                      {/* DESCARTAR */}
+                      <button
+                        className="btn-small"
+                        onClick={() => cambiarEstado(form, "Contactado")}
+                      >
+                        Contactado
+                      </button>
+
+                      <button
+                        className="btn-small"
+                        onClick={() => cambiarEstado(form, "En_proceso")}
+                      >
+                        En Proceso
+                      </button>
+
+                      <button
+                        className="btn-small"
+                        onClick={() => cambiarEstado(form, "Confirmado")}
+                      >
+                        Confirmado
+                      </button>
+
                       <button
                         className="btn-small btn-danger"
                         onClick={() => descartarSolicitud(form)}

@@ -1,9 +1,9 @@
-/* Fondo general */
+
 body {
     margin: 0;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-family: 'Poppins', sans-serif;
     background-color: #f1f5f9; 
-    color: #0f172a; 
+    color: #020b2b; 
 }
 
 /* Layout */
@@ -176,7 +176,6 @@ body {
     color: #1e293b;
 }
 
-/* Estilos para la sección de clientes */
 
 .page {
   padding: 30px;

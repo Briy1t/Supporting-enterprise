@@ -4,7 +4,7 @@ from app.models.auth_user import AuthUser
 from app.controllers.auth_controller import crear_usuario
 from app.schemas.auth_user import AuthCreate
 from app.models.servicio import Servicio
-from app.models.contacto import Contact         
+from app.models.contacto import Contactos         
 from app.models.demo_guiada import DemoGuiada   
 from app.models.acceso_empresas import AccesoEmpresas 
 from app.models.integracion import Integracion  
@@ -103,7 +103,7 @@ def crear_cliente(db: Session, data: dict):
 
     usuario_creado = crear_usuario(db, usuario_data)
 
-    # MARCAR FORMULARIO COMO CONVERTIDO
+  
     if "form_id" in data and "form_tipo" in data:
         tabla = obtener_tabla_formulario(data["form_tipo"])
         if tabla:
@@ -152,7 +152,7 @@ def descartar_formulario(db: Session, tipo: str, form_id: int):
 def listar_formularios_pendientes(db: Session):
     formularios = []
 
-    formularios += db.query(Contact).filter(Contact.estado == "pendiente").all()
+    formularios += db.query(Contactos).filter(Contactos.estado == "pendiente").all()
     formularios += db.query(DemoGuiada).filter(DemoGuiada.estado == "pendiente").all()
     formularios += db.query(AccesoEmpresas).filter(AccesoEmpresas.estado == "pendiente").all()
     formularios += db.query(Integracion).filter(Integracion.estado == "pendiente").all()
@@ -167,7 +167,11 @@ def listar_formularios_pendientes(db: Session):
             "correo": getattr(f, "email", None),
             "mensaje": getattr(f, "mensaje", None),
             "tipo": getattr(f, "tipo", None),
-            "estado": getattr(f, "estado", None)
+            "estado": getattr(f, "estado", None),
+            
+            "privacidad": getattr(f, "privacidad", None),
+            "fecha_aceptacion": getattr(f, "fecha_aceptacion", None),
+            "ip_usuario": getattr(f, "ip_usuario", None)
         })
 
     return resultado

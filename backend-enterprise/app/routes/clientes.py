@@ -2,14 +2,12 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.schemas.formulario import FormularioResponse
 from app.schemas.cliente import ClienteCreate, ClienteResponse
 from app.controllers.cliente import (
     crear_cliente,
     listar_clientes,
     obtener_cliente,
     eliminar_cliente,
-    listar_formularios_pendientes,
 )
 
 router = APIRouter(prefix="/clientes", tags=["Clientes"])
@@ -23,9 +21,7 @@ def crear_cliente_route(data: ClienteCreate, db: Session = Depends(get_db)):
 def listar_clientes_route(db: Session = Depends(get_db)):
     return listar_clientes(db)
 
-@router.get("/formularios", response_model=list[FormularioResponse])
-def listar_formularios_route(db: Session = Depends(get_db)):
-    return listar_formularios_pendientes(db)
+
 @router.get("/{cliente_id}", response_model=ClienteResponse)
 def obtener_cliente_route(cliente_id: int, db: Session = Depends(get_db)):
     cliente = obtener_cliente(db, cliente_id)

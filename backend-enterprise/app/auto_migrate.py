@@ -8,18 +8,6 @@ def ensure_estado_column():
         """
         ALTER TABLE contactos 
         ADD COLUMN IF NOT EXISTS estado VARCHAR DEFAULT 'pendiente';
-        """,
-        """
-        ALTER TABLE demo_guiada 
-        ADD COLUMN IF NOT EXISTS estado VARCHAR DEFAULT 'pendiente';
-        """,
-        """
-        ALTER TABLE acceso_empresas 
-        ADD COLUMN IF NOT EXISTS estado VARCHAR DEFAULT 'pendiente';
-        """,
-        """
-        ALTER TABLE integracion_personalizada 
-        ADD COLUMN IF NOT EXISTS estado VARCHAR DEFAULT 'pendiente';
         """
     ]
 

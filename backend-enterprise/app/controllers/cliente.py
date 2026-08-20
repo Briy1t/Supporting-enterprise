@@ -5,9 +5,7 @@ from app.controllers.auth_controller import crear_usuario
 from app.schemas.auth_user import AuthCreate
 from app.models.servicio import Servicio
 from app.models.contacto import Contactos         
-from app.models.demo_guiada import DemoGuiada   
-from app.models.acceso_empresas import AccesoEmpresas 
-from app.models.integracion import Integracion  
+
 
 import secrets
 import string
@@ -33,23 +31,8 @@ def generar_password():
 
 
 def obtener_tabla_formulario(tipo: str):
-    """
-    Ajustado a los tipos reales que envía la web pública.
-    """
-    tablas = {
-        "general": Contact,
-        "contacto": Contact,
+    return Contactos
 
-        "demo_guiada": DemoGuiada,
-        "demo_guiado": DemoGuiada,
-
-        "acceso_empresas": AccesoEmpresas,
-
-        "integracion_personalizada": Integracion,
-        "integracion": Integracion,
-    }
-
-    return tablas.get(tipo)
 
 
 def crear_cliente(db: Session, data: dict):
@@ -103,15 +86,11 @@ def crear_cliente(db: Session, data: dict):
 
     usuario_creado = crear_usuario(db, usuario_data)
 
-  
-    if "form_id" in data and "form_tipo" in data:
-        tabla = obtener_tabla_formulario(data["form_tipo"])
-        if tabla:
-            formulario = db.query(tabla).filter(tabla.id == data["form_id"]).first()
-            if formulario:
-                formulario.estado = "convertido"
-                db.commit()
-
+    if "form_id" in data:
+        formulario = db.query(Contactos).filter(Contactos.id == data["form_id"]).first()
+        if formulario:
+            formulario.estado = "convertido"
+            db.commit()
     return {
         "cliente": nuevo,
         "usuario": usuario_creado,
@@ -153,9 +132,6 @@ def listar_formularios_pendientes(db: Session):
     formularios = []
 
     formularios += db.query(Contactos).filter(Contactos.estado == "pendiente").all()
-    formularios += db.query(DemoGuiada).filter(DemoGuiada.estado == "pendiente").all()
-    formularios += db.query(AccesoEmpresas).filter(AccesoEmpresas.estado == "pendiente").all()
-    formularios += db.query(Integracion).filter(Integracion.estado == "pendiente").all()
 
     resultado = []
 

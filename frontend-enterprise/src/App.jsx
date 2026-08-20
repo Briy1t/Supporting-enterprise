@@ -4,7 +4,7 @@ import Clientes from "./pages/Clientes";
 import Tecnicos from "./pages/Tecnicos";
 import Servicios from "./pages/Servicios";
 import Alertas from "./pages/Alertas";
-import Administracion from "./pages/Administracion";
+import Administracion from "./pages/Administracion/Administracion";
 import CrearCliente from "./pages/CrearCliente";
 
 

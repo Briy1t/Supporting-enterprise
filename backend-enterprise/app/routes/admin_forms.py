@@ -13,21 +13,25 @@ from app.controllers.auth_controller import crear_usuario
 router = APIRouter(prefix="/admin/forms", tags=["Admin - Formularios"])
 
 
+
 @router.post("/importar", response_model=LeadResponse)
 def importar_lead_route(data: LeadCreate, db: Session = Depends(get_db)):
     lead_existente = db.query(Lead).filter(
-        Lead.correo == data.correo,
-        Lead.empresa == data.empresa,
-        Lead.contacto == data.contacto
+        Lead.contacto == data.contacto,
+        Lead.correo == data.correo
     ).first()
 
     if lead_existente:
-        raise HTTPException(status_code=400, detail="Este lead ya existe")
+        raise HTTPException(
+            status_code=400,
+            detail="Este contacto ya envió una solicitud"
+        )
 
     nuevo_lead = Lead(
-        empresa=data.empresa,
+        empresa=None,
         contacto=data.contacto,
         correo=data.correo,
+        telefono=data.telefono,
         mensaje=data.mensaje,
         origen=data.origen,
         estado="pendiente"
@@ -39,11 +43,24 @@ def importar_lead_route(data: LeadCreate, db: Session = Depends(get_db)):
 
     return nuevo_lead
 
+    
+
+@router.post("/importar")
+def importar_lead_route(data: LeadCreate, db: Session = Depends(get_db)):
+    print("RECIBIDO:", data)
+
+# ============================
+# LISTAR TODOS LOS LEADS
+# ============================
 
 @router.get("/", response_model=list[LeadResponse])
 def listar_leads_route(db: Session = Depends(get_db)):
-    return db.query(Lead).filter(Lead.estado == "pendiente").all()
+    return db.query(Lead).order_by(Lead.id.desc()).all()
 
+
+# ============================
+# OBTENER LEAD
+# ============================
 
 @router.get("/{lead_id}", response_model=LeadResponse)
 def obtener_lead_route(lead_id: int, db: Session = Depends(get_db)):
@@ -52,6 +69,10 @@ def obtener_lead_route(lead_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Lead no encontrado")
     return lead
 
+
+# ============================
+# CAMBIAR ESTADO
+# ============================
 
 @router.patch("/{lead_id}/estado")
 def actualizar_estado_route(lead_id: int, estado: str, db: Session = Depends(get_db)):
@@ -64,6 +85,9 @@ def actualizar_estado_route(lead_id: int, estado: str, db: Session = Depends(get
     return {"mensaje": "Estado actualizado", "lead": lead}
 
 
+# ============================
+# CONVERTIR LEAD EN CLIENTE
+# ============================
 
 @router.post("/{lead_id}/convertir")
 def convertir_lead_route(
@@ -109,6 +133,10 @@ def convertir_lead_route(
     }
 
 
+# ============================
+# DESCARTAR (ELIMINAR)
+# ============================
+
 @router.post("/{lead_id}/descartar")
 def descartar_lead_route(lead_id: int, db: Session = Depends(get_db)):
     lead = db.query(Lead).filter(Lead.id == lead_id).first()
@@ -119,7 +147,3 @@ def descartar_lead_route(lead_id: int, db: Session = Depends(get_db)):
     db.commit()
 
     return {"mensaje": "Lead eliminado permanentemente"}
-
-
-
-

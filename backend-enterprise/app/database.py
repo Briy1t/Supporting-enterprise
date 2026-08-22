@@ -20,6 +20,7 @@ from app.models.tecnico import Tecnico
 from app.models.ticket import Ticket
 from app.models.alarma import Alarma
 from app.models.contacto import Contactos
+from app.models.contratos import Contrato, HistorialContrato
 
 
 

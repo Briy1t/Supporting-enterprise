@@ -1,16 +1,24 @@
 /* ------------------------------
    KANBAN CORPORATIVO SUPPORTING
 ------------------------------ */
+.page-title,
+.section-title,
+.section-desc {
+  text-align: center;
+}
+
 
 .kanban-container {
   display: flex;
   gap: 25px;
   overflow-x: auto;
-  padding: 20px 0;
+  padding: 15px 0;
 }
 
+
 .kanban-column {
-  min-width: 300px;
+  min-width: 240px;
+  max-width: 240px;
   background: #ffffff;
   border-radius: 12px;
   padding: 18px;
@@ -64,7 +72,7 @@
   padding: 8px 12px;
   border-radius: 6px;
   border: 1px solid rgba(77,168,255,0.25);
-  background: #0b111e; /* azul corporativo */
+  background: #0b111e; 
   color: #e6e9f0;
   font-size: 13px;
   font-weight: 600;
@@ -72,14 +80,18 @@
   transition: 0.2s ease;
   min-width: 110px;
   text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
 }
 
 .lead-actions button:hover {
-  background: #111827; /* hover corporativo */
+  background: #111827;
   transform: translateY(-2px);
 }
 
-/* Botón rojo para descartar */
+
 .lead-actions .danger {
   background: #e74c3c !important;
   border-color: #c0392b !important;
@@ -88,3 +100,7 @@
 .lead-actions .danger:hover {
   background: #c0392b !important;
 }
+
+
+
+

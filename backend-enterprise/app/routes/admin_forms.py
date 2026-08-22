@@ -18,7 +18,8 @@ router = APIRouter(prefix="/admin/forms", tags=["Admin - Formularios"])
 def importar_lead_route(data: LeadCreate, db: Session = Depends(get_db)):
     lead_existente = db.query(Lead).filter(
         Lead.contacto == data.contacto,
-        Lead.correo == data.correo
+        Lead.correo == data.correo,
+        Lead.telefono == data.telefono
     ).first()
 
     if lead_existente:
@@ -28,7 +29,6 @@ def importar_lead_route(data: LeadCreate, db: Session = Depends(get_db)):
         )
 
     nuevo_lead = Lead(
-        empresa=None,
         contacto=data.contacto,
         correo=data.correo,
         telefono=data.telefono,
@@ -43,11 +43,6 @@ def importar_lead_route(data: LeadCreate, db: Session = Depends(get_db)):
 
     return nuevo_lead
 
-    
-
-@router.post("/importar")
-def importar_lead_route(data: LeadCreate, db: Session = Depends(get_db)):
-    print("RECIBIDO:", data)
 
 # ============================
 # LISTAR TODOS LOS LEADS
@@ -92,7 +87,7 @@ def actualizar_estado_route(lead_id: int, estado: str, db: Session = Depends(get
 @router.post("/{lead_id}/convertir")
 def convertir_lead_route(
     lead_id: int,
-    telefono: str | None = None,
+    telefono: str,
     empresa: str | None = None,
     servicio: str | None = None,
     db: Session = Depends(get_db)
@@ -104,6 +99,7 @@ def convertir_lead_route(
     cliente_data = {
         "contacto": lead.contacto,
         "correo": lead.correo,
+        "telefono": telefono or lead.telefono,
         "empresa": empresa or lead.empresa,
         "mensaje": lead.mensaje,
         "lead_id": lead.id,

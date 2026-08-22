@@ -12,7 +12,8 @@ from app.routes.tickets import router as tickets_router
 from app.routes.tecnicos import router as tecnicos_router
 from app.routes.alarmas import router as alarmas_router
 from app.routes.usuarios import router as usuarios_router
-
+from app.routes.lead import router as lead_router
+from app.routes.contratos import router as contratos_router
 
 app = FastAPI(
     title="SUPPORTING Platform Backend",
@@ -36,6 +37,8 @@ app.include_router(tickets_router)
 app.include_router(tecnicos_router)
 app.include_router(alarmas_router)
 app.include_router(usuarios_router)
+app.include_router(lead_router)
+app.include_router(contratos_router)
 
 @app.get("/")
 def root():

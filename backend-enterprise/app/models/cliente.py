@@ -6,9 +6,9 @@ class Cliente(Base):
     __tablename__ = "clientes"
 
     id = Column(Integer, primary_key=True, index=True)
-    nombre = Column(String, nullable=False)
-    email = Column(String, nullable=False)
-    telefono = Column(String, nullable=True)
+    nombre = Column(String,unique=True, nullable=False)
+    email = Column(String,unique=True, nullable=False)
+    telefono = Column(String,unique=True, nullable=False)
     empresa = Column(String, nullable=True)
     servicio = Column(String, nullable=True)
     estado = Column(String, default="activo")
@@ -16,3 +16,4 @@ class Cliente(Base):
     preferencia = Column(String, nullable=True)
 
     servicios = relationship("Servicio", back_populates="cliente")
+    contrato = relationship("Contrato", back_populates="cliente", uselist=False)

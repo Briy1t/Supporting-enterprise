@@ -6,10 +6,9 @@ class Lead(Base):
     __tablename__ = "leads"
 
     id = Column(Integer, primary_key=True, index=True)
-    empresa = Column(String, nullable=False)
     contacto = Column(String, nullable=False)
     correo = Column(String, nullable=False)
-    telefono = Column(String, nullable=True)
+    telefono = Column(String, nullable=False)
     mensaje = Column(String, nullable=False)
     origen = Column(String, nullable=False)
     fecha = Column(DateTime, default=datetime.utcnow)

@@ -3,10 +3,20 @@ export default function LeadCard({ lead, cambiarEstado, descartar }) {
     <div className="lead-card">
       <h4>{lead.contacto}</h4>
 
-      <p><strong>Correo:</strong> {lead.correo}</p>
+      <p><strong>Correo:</strong> {lead.correo}→
+        <a href={`mailto:${lead.correo}`} className="btn-mail">
+        ✉
+        </a>
+</p>
 
       {lead.telefono && (
-        <p><strong>Teléfono:</strong> {lead.telefono}</p>
+        <p><strong>Teléfono:</strong>  {lead.telefono}
+        
+        {lead.telefono && (
+          <a href={`tel:${lead.telefono}`} className="btn-call">→
+            ✆
+          </a>
+        )}</p>
       )}
 
       <p><strong>Mensaje:</strong> {lead.mensaje}</p>
@@ -15,7 +25,7 @@ export default function LeadCard({ lead, cambiarEstado, descartar }) {
 
         {/* Pipeline */}
         <button onClick={() => cambiarEstado(lead.id, "llamado")}>
-          📞 Llamado
+          ☎️ Llamado
         </button>
 
         <button onClick={() => cambiarEstado(lead.id, "esperando_respuesta")}>
@@ -23,7 +33,14 @@ export default function LeadCard({ lead, cambiarEstado, descartar }) {
         </button>
 
         <button onClick={() => cambiarEstado(lead.id, "aceptado")}>
-          ✓ Aceptar
+           ✓  Concretado
+        </button>
+
+        <button
+          className="btn-small"
+          onClick={() => window.location.href = `/contratos?cliente=${lead.id}`}
+        >
+          📄 Enviar contrato
         </button>
 
         <button
@@ -38,23 +55,6 @@ export default function LeadCard({ lead, cambiarEstado, descartar }) {
 
         <button className="danger" onClick={() => descartar(lead.id)}>
           🟥 Descartar
-        </button>
-
-        {lead.telefono && (
-          <a href={`tel:${lead.telefono}`} className="btn-small">
-            📞 Llamar
-          </a>
-        )}
-
-        <a href={`mailto:${lead.correo}`} className="btn-small">
-          ✉️ Enviar correo
-        </a>
-
-        <button
-          className="btn-small"
-          onClick={() => window.location.href = `/contratos?cliente=${lead.id}`}
-        >
-          📄 Enviar contrato
         </button>
 
       </div>

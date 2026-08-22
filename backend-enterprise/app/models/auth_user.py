@@ -6,6 +6,7 @@ class AuthUser(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     usuario = Column(String, unique=True, nullable=False)
+    telefono = Column(String, unique=True, nullable=True)
     email = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
     rol = Column(String, default="cliente")

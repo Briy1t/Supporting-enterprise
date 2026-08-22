@@ -15,7 +15,7 @@ router = APIRouter(prefix="/admin/forms", tags=["Admin - Formularios"])
 def importar_lead_route(data: LeadCreate, db: Session = Depends(get_db)):
     lead_existente = db.query(Lead).filter(
         Lead.correo == data.correo,
-        Lead.empresa == data.empresa,
+        Lead.telefono == data.telefono,
         Lead.contacto == data.contacto
     ).first()
 
@@ -29,6 +29,7 @@ def importar_lead_route(data: LeadCreate, db: Session = Depends(get_db)):
         empresa=data.empresa,
         contacto=data.contacto,
         correo=data.correo,
+        telefono=data.telefono,
         mensaje=data.mensaje,
         origen=data.origen or "contacto_general",
         estado="pendiente"

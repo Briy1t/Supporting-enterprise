@@ -10,12 +10,12 @@ class LeadCreate(BaseModel):
         pattern=r"^\+?\d[\d\s]{7,14}$"
     )    
     mensaje: str
-    origen: str = "web"
 
 
 class LeadResponse(BaseModel):
     id: int
     contacto: str
+    empresa: str | None
     correo: EmailStr
     telefono: str = Field(
         min_length=8,
@@ -23,8 +23,6 @@ class LeadResponse(BaseModel):
         pattern=r"^\+?\d[\d\s]{7,14}$"
     )    
     mensaje: str
-    origen: str
-    fecha: datetime
     estado: str
 
     class Config:

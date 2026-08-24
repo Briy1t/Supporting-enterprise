@@ -1,0 +1,28 @@
+from fpdf import FPDF
+
+def generar_pdf_contrato(lead, contrato):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+
+    pdf.cell(200, 10, txt="CONTRATO DE SERVICIO", ln=True)
+
+    pdf.ln(10)
+    pdf.cell(200, 10, txt=f"Empresa: {lead.empresa}", ln=True)
+    pdf.cell(200, 10, txt=f"Contacto: {lead.contacto}", ln=True)
+    pdf.cell(200, 10, txt=f"Correo: {lead.correo}", ln=True)
+    pdf.cell(200, 10, txt=f"Teléfono: {lead.telefono}", ln=True)
+
+    pdf.ln(10)
+    pdf.multi_cell(0, 10, txt=f"Servicios contratados:\n{', '.join(contrato.servicios)}")
+
+    pdf.ln(10)
+    pdf.multi_cell(0, 10, txt=f"Duración: {contrato.duracion}")
+
+    pdf.ln(10)
+    pdf.multi_cell(0, 10, txt=f"Políticas:\n{contrato.politicas}")
+
+    ruta = f"contratos_generados/contrato_{contrato.id}.pdf"
+    pdf.output(ruta)
+
+    return ruta

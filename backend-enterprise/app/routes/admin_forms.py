@@ -33,7 +33,6 @@ def importar_lead_route(data: LeadCreate, db: Session = Depends(get_db)):
         correo=data.correo,
         telefono=data.telefono,
         mensaje=data.mensaje,
-        origen=data.origen,
         estado="pendiente"
     )
 

@@ -3,20 +3,25 @@ export default function LeadCard({ lead, cambiarEstado, descartar }) {
     <div className="lead-card">
       <h4>{lead.contacto}</h4>
 
-      <p><strong>Correo:</strong> {lead.correo}→
-        <a href={`mailto:${lead.correo}`} className="btn-mail">
+      <p><strong>      <a 
+        href={`https://mail.google.com/mail/?view=cm&fs=1&to=${lead.correo}`}
+        target="_blank"
+        class="btn-mail"
+      >
         ✉
-        </a>
-</p>
-
-      {lead.telefono && (
-        <p><strong>Teléfono:</strong>  {lead.telefono}
+      </a> Correo:</strong> {lead.correo}
+       
         
+      </p>
+
         {lead.telefono && (
-          <a href={`tel:${lead.telefono}`} className="btn-call">→
-            ✆
-          </a>
-        )}</p>
+          <p><strong> 
+            <a href={`tel:${lead.telefono}`} className="btn-call">
+              ✆
+            </a>Teléfono:</strong>  {lead.telefono}
+              
+
+      </p>
       )}
 
       <p><strong>Mensaje:</strong> {lead.mensaje}</p>

@@ -6,6 +6,7 @@ import Servicios from "./pages/Servicios";
 import Alertas from "./pages/Alertas";
 import Administracion from "./pages/Administracion/Administracion";
 import CrearCliente from "./pages/CrearCliente";
+import Contratos from "./pages/Contratos";
 
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
         <Route path="/alertas" element={<Alertas />} />
         <Route path="/administracion" element={<Administracion />} />
         <Route path="/crear-cliente" element={<CrearCliente />} />
+        <Route path= "/contratos" element={<Contratos/>} />
       </Routes>
     </BrowserRouter>
   );

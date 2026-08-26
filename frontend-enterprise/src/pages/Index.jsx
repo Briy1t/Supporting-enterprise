@@ -1,24 +1,17 @@
-import "../styles/layout.css";
 import Sidebar from "../components/Sidebar";
 import Dashboard from "../components/Dashboard";
 
-const Index = () => {
-    return (
-        <div className="layout">
-            <Sidebar />
+export default function Index() {
+  return (
+    <div className="tw-layout">
+      {/* 1. Menú Lateral (Ya incluye navegación e icono) */}
+      <Sidebar />
 
-            <main className="layout-content">
-
-                <div className="top-panel">
-                    <h2>Infraestructura Segura - Rendimiento Garantizado</h2>
-                    <p>Soporte IT profesional, hardening avanzado y monitorización continua para empresas modernas.</p>
-                </div>
-
-                <Dashboard />
-            </main>
-        </div>
-    );
-};
-
-export default Index;
-
+      {/* 2. Contenido Principal */}
+      <main className="tw-layout-content">
+        {/* El Dashboard maneja de forma limpia el Banner + las Tarjetas */}
+        <Dashboard />
+      </main>
+    </div>
+  );
+}

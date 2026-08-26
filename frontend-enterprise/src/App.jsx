@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Clientes from "./pages/Clientes";
 import Tecnicos from "./pages/Tecnicos";
-import Servicios from "./pages/Servicios";
+import Servicios from "./pages/Servicios/Servicios";
 import Alertas from "./pages/Alertas";
 import Administracion from "./pages/Administracion/Administracion";
 import CrearCliente from "./pages/CrearCliente";

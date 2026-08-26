@@ -1,72 +1,87 @@
 import { useState, useEffect } from "react";
-import "../styles/clientes.css";
+import Sidebar from "../components/Sidebar";
+import { ArrowLeft, Eye, Edit3 } from "lucide-react";
 
 export default function Clientes() {
   const [clientes, setClientes] = useState([]);
 
   useEffect(() => {
     fetch("http://localhost:8001/clientes")
-      .then(res => res.json())
-      .then(data => setClientes(data))
-      .catch(err => console.error("Error cargando clientes:", err));
+      .then((res) => res.json())
+      .then((data) => setClientes(data))
+      .catch((err) => console.error("Error cargando clientes:", err));
   }, []);
 
   return (
-    <div className="page clientes-page">
-      <h1 className="page-title">Clientes - SUPPORTING 🫴</h1>
+    <div className="tw-layout">
+      <Sidebar />
 
-      <div className="clientes-table">
-        <table>
-          <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Empresa</th>
-              <th>Servicio</th>
-              <th>Estado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
+      <main className="tw-layout-content space-y-6">
+        <div className="flex items-center justify-between pb-4 border-b border-slate-200">
+          <h1 className="text-2xl font-bold text-slate-900 flex items-center">
+            <span className="tw-brand-icon"></span> Clientes
+          </h1>
 
-          <tbody>
-            {clientes.length === 0 ? (
+          <button
+            onClick={() => window.history.back()}
+            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition"
+          >
+            <ArrowLeft className="w-4 h-4" /> Volver
+          </button>
+        </div>
+
+        <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-slate-50 text-slate-600 border-b border-slate-200 font-semibold">
               <tr>
-                <td colSpan="5">No hay clientes registrados</td>
+                <th className="p-3.5">Nombre</th>
+                <th className="p-3.5">Empresa</th>
+                <th className="p-3.5">Servicio</th>
+                <th className="p-3.5">Estado</th>
+                <th className="p-3.5 text-right">Acciones</th>
               </tr>
-            ) : (
-              clientes.map((c) => (
-                <tr key={c.id}>
-                  <td>{c.nombre}</td>
-                  <td>{c.empresa}</td>
-                  <td>{c.servicio}</td>
-                  <td>{c.estado}</td>
-
-                  <td>
-                    <button
-                      className="btn-small"
-                      onClick={() => window.location.href = `/clientes/${c.id}`}
-                    >
-                      Ver
-                    </button>
-
-                    <button
-                      className="btn-small"
-                      onClick={() => window.location.href = `/editar-cliente/${c.id}`}
-                    >
-                      Editar
-                    </button>
+            </thead>
+            <tbody className="divide-y divide-slate-100 text-slate-700">
+              {clientes.length === 0 ? (
+                <tr>
+                  <td colSpan="5" className="p-6 text-center text-slate-400 italic">
+                    No hay clientes registrados
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      <div className="volver-container">
-        <button className="btn-volver" onClick={() => window.history.back()}>
-          ← Volver
-        </button>
-      </div>
+              ) : (
+                clientes.map((c) => (
+                  <tr key={c.id} className="hover:bg-slate-50/50 transition">
+                    <td className="p-3.5 font-medium text-slate-900">{c.nombre}</td>
+                    <td className="p-3.5">{c.empresa}</td>
+                    <td className="p-3.5">{c.servicio}</td>
+                    <td className="p-3.5">
+                      <span className="px-2 py-0.5 rounded text-xs font-semibold bg-blue-50 text-blue-700">
+                        {c.estado}
+                      </span>
+                    </td>
+                    <td className="p-3.5 text-right space-x-2">
+                      <button
+                        onClick={() => (window.location.href = `/clientes/${c.id}`)}
+                        className="p-1.5 text-slate-600 hover:text-blue-600 hover:bg-slate-100 rounded-lg transition"
+                        title="Ver detalle"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => (window.location.href = `/editar-cliente/${c.id}`)}
+                        className="p-1.5 text-slate-600 hover:text-amber-600 hover:bg-slate-100 rounded-lg transition"
+                        title="Editar"
+                      >
+                        <Edit3 className="w-4 h-4" />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </main>
     </div>
   );
 }

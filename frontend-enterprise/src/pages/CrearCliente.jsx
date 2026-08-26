@@ -1,5 +1,6 @@
 import { useState } from "react";
-import "../styles/administracion2.css";
+import Sidebar from "../components/Sidebar";
+import { ArrowLeft } from "lucide-react";
 
 export default function CrearCliente() {
   const params = new URLSearchParams(window.location.search);
@@ -12,7 +13,7 @@ export default function CrearCliente() {
     lead_id: params.get("lead_id") || null,
     telefono: "",
     preferencia: "correo",
-    servicios: []
+    servicios: [],
   });
 
   const handleChange = (e) => {
@@ -20,7 +21,7 @@ export default function CrearCliente() {
   };
 
   const handleServicios = (e) => {
-    const opciones = Array.from(e.target.selectedOptions).map(opt => opt.value);
+    const opciones = Array.from(e.target.selectedOptions).map((opt) => opt.value);
     setForm({ ...form, servicios: opciones });
   };
 
@@ -30,69 +31,88 @@ export default function CrearCliente() {
     const res = await fetch("http://localhost:8001/clientes", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form)
+      body: JSON.stringify(form),
     });
 
     const data = await res.json();
 
-    alert(`
-Cliente creado correctamente.
-
-Usuario: ${data.usuario.usuario}
-Contraseña temporal: ${data.password_temporal}
-`);
+    alert(`Cliente creado.\nUsuario: ${data.usuario.usuario}\nPass temporal: ${data.password_temporal}`);
 
     if (form.lead_id) {
-      await fetch(`http://localhost:8001/leads/${form.lead_id}`, {
-        method: "DELETE"
-      });
+      await fetch(`http://localhost:8001/leads/${form.lead_id}`, { method: "DELETE" });
     }
 
     window.location.href = "/administracion";
   };
 
   return (
-    <div className="page">
-      <h1 className="page-title">Crear Cliente</h1>
+    <div className="tw-layout">
+      <Sidebar />
 
-      <form className="form" onSubmit={handleSubmit}>
-        <input name="empresa" value={form.empresa} onChange={handleChange} />
-        <input name="contacto" value={form.contacto} onChange={handleChange} />
-        <input name="correo" value={form.correo} onChange={handleChange} />
-        <textarea name="mensaje" value={form.mensaje} onChange={handleChange} />
-        <select multiple value={form.servicios} onChange={handleServicios}>
-          <option value="hardening">Hardening</option>
-          <option value="monitorizacion">Monitorización</option>
-          <option value="soporte">Soporte</option>
-          <option value="auditoria">Auditoría</option>
-        </select>
+      <main className="tw-layout-content max-w-2xl space-y-6">
+        <div className="flex items-center justify-between pb-4 border-b border-slate-200">
+          <h1 className="text-2xl font-bold text-slate-900 flex items-center">
+            <span className="tw-brand-icon"></span> Crear Cliente
+          </h1>
 
-        <input
-          type="text"
-          name="telefono"
-          placeholder="Número de teléfono"
-          value={form.telefono}
-          onChange={handleChange}
-        />
+          <button
+            onClick={() => window.history.back()}
+            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition"
+          >
+            <ArrowLeft className="w-4 h-4" /> Volver
+          </button>
+        </div>
 
-        <select
-          name="preferencia"
-          value={form.preferencia}
-          onChange={handleChange}
-        >
-          <option value="correo">Correo</option>
-          <option value="whatsapp">WhatsApp</option>
-          <option value="llamada">Llamada</option>
-        </select>
+        <form className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4" onSubmit={handleSubmit}>
+          <div>
+            <label className="text-xs font-semibold text-slate-600">Empresa</label>
+            <input name="empresa" value={form.empresa} onChange={handleChange} className="w-full p-2 text-sm border rounded-lg bg-slate-50" />
+          </div>
 
-        <button className="btn-primary">Guardar</button>
-      </form>
+          <div>
+            <label className="text-xs font-semibold text-slate-600">Contacto</label>
+            <input name="contacto" value={form.contacto} onChange={handleChange} className="w-full p-2 text-sm border rounded-lg bg-slate-50" />
+          </div>
 
-      <div className="volver-container">
-        <button className="btn-volver" onClick={() => window.history.back()}>
-          ← Volver
-        </button>
-      </div>
+          <div>
+            <label className="text-xs font-semibold text-slate-600">Correo</label>
+            <input name="correo" value={form.correo} onChange={handleChange} className="w-full p-2 text-sm border rounded-lg bg-slate-50" />
+          </div>
+
+          <div>
+            <label className="text-xs font-semibold text-slate-600">Mensaje / Notas</label>
+            <textarea name="mensaje" value={form.mensaje} onChange={handleChange} className="w-full p-2 text-sm border rounded-lg bg-slate-50 h-20" />
+          </div>
+
+          <div>
+            <label className="text-xs font-semibold text-slate-600">Servicios</label>
+            <select multiple value={form.servicios} onChange={handleServicios} className="w-full p-2 text-sm border rounded-lg bg-slate-50 h-24">
+              <option value="hardening">Hardening</option>
+              <option value="monitorizacion">Monitorización</option>
+              <option value="soporte">Soporte</option>
+              <option value="auditoria">Auditoría</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="text-xs font-semibold text-slate-600">Teléfono</label>
+            <input name="telefono" value={form.telefono} onChange={handleChange} className="w-full p-2 text-sm border rounded-lg bg-slate-50" />
+          </div>
+
+          <div>
+            <label className="text-xs font-semibold text-slate-600">Preferencia de contacto</label>
+            <select name="preferencia" value={form.preferencia} onChange={handleChange} className="w-full p-2 text-sm border rounded-lg bg-slate-50">
+              <option value="correo">Correo</option>
+              <option value="whatsapp">WhatsApp</option>
+              <option value="llamada">Llamada</option>
+            </select>
+          </div>
+
+          <button className="w-full py-2.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition">
+            Guardar Cliente
+          </button>
+        </form>
+      </main>
     </div>
   );
 }

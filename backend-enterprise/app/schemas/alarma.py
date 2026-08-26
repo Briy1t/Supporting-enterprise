@@ -13,5 +13,4 @@ class AlarmaResponse(AlarmaBase):
     id: int
     estado: str
     fecha: datetime
-
     model_config = ConfigDict(from_attributes=True)

@@ -1,0 +1,3 @@
+@utility tw-table {
+  @apply w-full border border-supporting-gray rounded-lg;
+}

@@ -1,0 +1,35 @@
+/* layout.css */
+@utility tw-layout {
+  @apply flex min-h-screen bg-slate-50;
+}
+
+@utility tw-layout-content {
+  @apply flex-1 p-8 sm:p-10 max-w-7xl mx-auto;
+}
+
+@utility tw-top-panel {
+  @apply p-8 rounded-2xl shadow-lg mb-8 relative overflow-hidden;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: #ffffff;
+}
+
+@utility tw-top-title {
+  @apply text-2xl sm:text-3xl font-bold tracking-tight mb-3;
+}
+
+@utility tw-top-desc {
+  @apply text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl;
+}
+
+/* dashboard.css */
+@utility tw-card {
+  @apply bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 hover:shadow-md transition-all duration-200;
+}
+
+@utility tw-card-title {
+  @apply text-slate-500 font-medium text-sm mb-1 uppercase tracking-wider;
+}
+
+@utility tw-card-number {
+  @apply text-3xl font-bold text-slate-900;
+}

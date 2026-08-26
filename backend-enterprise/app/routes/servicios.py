@@ -2,34 +2,42 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.schemas.servicio import ServicioCreate, ServicioResponse
-from app.controllers.servicio import (
-    crear_servicio,
-    listar_servicios,
-    obtener_servicio,
-    eliminar_servicio
-)
+from app.models.servicio import Servicio
+from app.schemas.servicio import ServicioCreate, ServicioUpdate, ServicioResponse
 
 router = APIRouter(prefix="/servicios", tags=["Servicios"])
 
 @router.post("/", response_model=ServicioResponse)
 def crear_servicio_route(data: ServicioCreate, db: Session = Depends(get_db)):
-    return crear_servicio(db, data.dict())
+    servicio = Servicio(**data.dict())
+    db.add(servicio)
+    db.commit()
+    db.refresh(servicio)
+    return servicio
 
 @router.get("/", response_model=list[ServicioResponse])
 def listar_servicios_route(db: Session = Depends(get_db)):
-    return listar_servicios(db)
+    return db.query(Servicio).filter(Servicio.activo == True).all()
 
-@router.get("/{servicio_id}", response_model=ServicioResponse)
-def obtener_servicio_route(servicio_id: int, db: Session = Depends(get_db)):
-    servicio = obtener_servicio(db, servicio_id)
+@router.put("/{servicio_id}", response_model=ServicioResponse)
+def actualizar_servicio_route(servicio_id: int, data: ServicioUpdate, db: Session = Depends(get_db)):
+    servicio = db.query(Servicio).filter(Servicio.id == servicio_id).first()
     if not servicio:
-        raise HTTPException(status_code=404, detail="Servicio no encontrado")
+        raise HTTPException(404, "Servicio no encontrado")
+
+    for campo, valor in data.dict(exclude_unset=True).items():
+        setattr(servicio, campo, valor)
+
+    db.commit()
+    db.refresh(servicio)
     return servicio
 
 @router.delete("/{servicio_id}")
 def eliminar_servicio_route(servicio_id: int, db: Session = Depends(get_db)):
-    servicio = eliminar_servicio(db, servicio_id)
+    servicio = db.query(Servicio).filter(Servicio.id == servicio_id).first()
     if not servicio:
-        raise HTTPException(status_code=404, detail="Servicio no encontrado")
-    return {"mensaje": "Servicio eliminado"}
+        raise HTTPException(404, "Servicio no encontrado")
+
+    servicio.activo = False
+    db.commit()
+    return {"mensaje": "Servicio desactivado"}

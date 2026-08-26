@@ -1,0 +1,7 @@
+@utility tw-navbar {
+  @apply w-full bg-supporting text-supporting-light px-6 py-4 shadow-lg flex items-center justify-between;
+}
+
+@utility tw-navbar-title {
+  @apply text-xl font-bold tracking-wide;
+}

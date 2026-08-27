@@ -64,7 +64,7 @@ def generar_contrato(lead_id: int, data: ContratoCreate, db: Session = Depends(g
         raise HTTPException(status_code=404, detail="Lead no encontrado")
 
     # Obtener servicios desde la BD
-    servicios_db = db.query(Servicio).filter(Servicio.nombre.in_(data.servicios)).all()
+    servicios_db = db.query(Servicio).filter(Servicio.id.in_(data.servicios))
     servicios_nombres = [s.nombre for s in servicios_db]
 
     if not servicios_nombres:
@@ -74,7 +74,7 @@ def generar_contrato(lead_id: int, data: ContratoCreate, db: Session = Depends(g
 
     contrato = Contrato(
         lead_id=lead_id,
-        cliente_id=data.cliente_id,
+        cliente_id=None,
         servicios=servicios_nombres,
         duracion=data.duracion,
         politicas=politicas,

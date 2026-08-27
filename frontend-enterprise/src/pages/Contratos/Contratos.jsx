@@ -3,7 +3,7 @@ import Sidebar from "../../components/Sidebar";
 import ContratoForm from "./ContratoForm";
 import ContratoCard from "./ContratoCard";
 import ModalConfirmacion from "./ModalConfirmacion";
-import { ArrowLeft, Send, FilePlus } from "lucide-react";
+import { ArrowLeft, Send, FilePlus, Save } from "lucide-react";
 
 export default function Contratos() {
   const [lead, setLead] = useState(null);
@@ -13,20 +13,32 @@ export default function Contratos() {
   const [mostrarForm, setMostrarForm] = useState(false);
   const [modal, setModal] = useState({ visible: false, accion: null });
 
-  const leadId = localStorage.getItem("leadId");
+  const params = new URLSearchParams(window.location.search);
+  const leadId = params.get("lead");
 
   useEffect(() => {
-    fetch(`http://localhost:8001/leads/${leadId}`)
+    // Cargar lead
+    fetch(`http://localhost:8001/admin/forms/${leadId}`)
       .then((res) => res.json())
       .then((data) => {
         setLead(data);
         setCorreoEnvio(data.correo);
       });
 
-    fetch("http://localhost:8001/servicios/")
+    // Cargar servicios (SIN barra final)
+    fetch("http://localhost:8001/servicios")
       .then((res) => res.json())
       .then((data) => setServiciosDisponibles(data));
   }, [leadId]);
+
+  const guardarCambiosLead = async () => {
+    await fetch(`http://localhost:8001/admin/forms/${leadId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(lead),
+    });
+    alert("Datos del lead actualizados correctamente.");
+  };
 
   const handleServicios = (e) => {
     const values = Array.from(e.target.selectedOptions, (opt) => Number(opt.value));
@@ -38,12 +50,11 @@ export default function Contratos() {
       <Sidebar />
 
       <main className="tw-layout-content space-y-6">
+        {/* HEADER */}
         <div className="flex items-center justify-between pb-4 border-b border-slate-200">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900 flex items-center">
-              <span className="tw-brand-icon"></span> Gestión de Contratos
-            </h1>
-          </div>
+          <h1 className="text-2xl font-bold text-slate-900 flex items-center">
+            <span className="tw-brand-icon"></span> Gestión de Contratos
+          </h1>
 
           <button
             onClick={() => window.history.back()}
@@ -53,14 +64,61 @@ export default function Contratos() {
           </button>
         </div>
 
+        {/* DATOS DEL LEAD */}
         {lead && (
-          <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-sm space-y-1">
-            <p><strong className="text-slate-800">Contacto:</strong> {lead.contacto}</p>
-            <p><strong className="text-slate-800">Correo:</strong> {lead.correo}</p>
-            <p><strong className="text-slate-800">Teléfono:</strong> {lead.telefono}</p>
+          <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+            <h3 className="font-bold text-slate-900 border-b pb-2">Datos</h3>
+
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-slate-600">Empresa</label>
+              <input
+                type="text"
+                value={lead.empresa || ""}
+                onChange={(e) => setLead({ ...lead, empresa: e.target.value })}
+                className="w-full p-2 text-sm border border-slate-300 rounded-lg bg-slate-50"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-slate-600">Contacto</label>
+              <input
+                type="text"
+                value={lead.contacto}
+                onChange={(e) => setLead({ ...lead, contacto: e.target.value })}
+                className="w-full p-2 text-sm border border-slate-300 rounded-lg bg-slate-50"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-slate-600">Correo</label>
+              <input
+                type="email"
+                value={lead.correo}
+                onChange={(e) => setLead({ ...lead, correo: e.target.value })}
+                className="w-full p-2 text-sm border border-slate-300 rounded-lg bg-slate-50"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-slate-600">Teléfono</label>
+              <input
+                type="text"
+                value={lead.telefono}
+                onChange={(e) => setLead({ ...lead, telefono: e.target.value })}
+                className="w-full p-2 text-sm border border-slate-300 rounded-lg bg-slate-50"
+              />
+            </div>
+
+            <button
+              onClick={guardarCambiosLead}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition"
+            >
+              <Save className="w-4 h-4" /> Guardar cambios
+            </button>
           </div>
         )}
 
+        {/* SELECCIÓN DE SERVICIOS */}
         <div className="space-y-4 max-w-2xl">
           <div>
             <h2 className="text-sm font-bold text-slate-700 mb-1">Seleccionar servicios</h2>
@@ -70,7 +128,7 @@ export default function Contratos() {
               className="w-full p-2.5 text-sm border border-slate-300 rounded-lg bg-white h-32"
             >
               {serviciosDisponibles.map((s) => (
-                <option key={s.id} value={s.id} className="p-1">
+                <option key={s.id} value={s.id}>
                   {s.nombre} — {s.precio}€
                 </option>
               ))}
@@ -94,6 +152,7 @@ export default function Contratos() {
             >
               <FilePlus className="w-4 h-4" /> Generar contrato
             </button>
+
             <button
               className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition"
               onClick={() => setModal({ visible: true, accion: "enviar" })}
@@ -103,8 +162,10 @@ export default function Contratos() {
           </div>
         </div>
 
+        {/* CONTRATO ACTUAL */}
         <ContratoCard leadId={leadId} />
 
+        {/* FORMULARIO DE GENERACIÓN */}
         {mostrarForm && (
           <ContratoForm
             leadId={leadId}
@@ -114,6 +175,7 @@ export default function Contratos() {
           />
         )}
 
+        {/* MODAL DE CONFIRMACIÓN */}
         {modal.visible && (
           <ModalConfirmacion
             accion={modal.accion}

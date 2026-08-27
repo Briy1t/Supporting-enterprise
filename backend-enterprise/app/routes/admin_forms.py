@@ -63,6 +63,22 @@ def obtener_lead_route(lead_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Lead no encontrado")
     return lead
 
+# ============================
+# ACTUALIZAR LEAD
+# ============================
+
+@router.put("/{lead_id}", response_model=LeadResponse)
+def actualizar_lead_route(lead_id: int, data: LeadCreate, db: Session = Depends(get_db)):
+    lead = db.query(Lead).filter(Lead.id == lead_id).first()
+    if not lead:
+        raise HTTPException(status_code=404, detail="Lead no encontrado")
+
+    for campo, valor in data.dict().items():
+        setattr(lead, campo, valor)
+
+    db.commit()
+    db.refresh(lead)
+    return lead
 
 # ============================
 # CAMBIAR ESTADO

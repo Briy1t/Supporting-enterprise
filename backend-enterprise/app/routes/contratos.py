@@ -8,15 +8,32 @@ from app.models.contratos import Contrato, HistorialContrato
 
 router = APIRouter(prefix="/contratos", tags=["Contratos"])
 
-@router.get("/{cliente_id}")
-def obtener_contrato(cliente_id: int, db: Session = Depends(get_db)):
-    contrato = db.query(Contrato).filter_by(cliente_id=cliente_id).first()
-    historial = db.query(HistorialContrato).filter_by(cliente_id=cliente_id).all()
+@router.get("/lead/{lead_id}")
+def obtener_contrato_por_lead(lead_id: int, db: Session = Depends(get_db)):
+    contrato = db.query(Contrato).filter_by(lead_id=lead_id).first()
+    historial = db.query(HistorialContrato).filter_by(lead_id=lead_id).all()
+
+    if not contrato:
+        return {"contrato": None, "historial": []}
 
     return {
-        "contrato": contrato,
-        "historial": historial
+        "contrato": {
+            "id": contrato.id,
+            "servicios": contrato.servicios,
+            "duracion": contrato.duracion,
+            "politicas": contrato.politicas,
+            "estado": contrato.estado,
+            "archivo_pdf": contrato.archivo_pdf,
+            "fecha_creacion": contrato.fecha_creacion,
+            "fecha_envio": contrato.fecha_envio,
+            "fecha_firma": contrato.fecha_firma,
+        },
+        "historial": [
+            {"fecha": h.fecha, "accion": h.accion}
+            for h in historial
+        ]
     }
+
 
 
 @router.post("/subir/{cliente_id}")
@@ -32,7 +49,7 @@ def subir_contrato(cliente_id: int, archivo: UploadFile = File(...), db: Session
         contrato = Contrato(cliente_id=cliente_id, archivo=ruta)
         db.add(contrato)
     else:
-        contrato.archivo = ruta
+        contrato.archivo_pdf = ruta
 
     db.commit()
 

@@ -15,4 +15,4 @@ class Cliente(Base):
     lead_id = Column(Integer, nullable=True) 
     preferencia = Column(String, nullable=True)
 
-    contrato = relationship("Contrato", back_populates="cliente", uselist=False)
+    contratos = relationship("Contrato", back_populates="cliente", uselist=False)

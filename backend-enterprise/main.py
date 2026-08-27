@@ -24,11 +24,12 @@ ensure_estado_column()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  #  poner la IP de la web cuando esté en la nube
+    allow_origins=["*"],  # permitir todo durante desarrollo
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 app.include_router(auth_router)
 app.include_router(clientes_router)
 app.include_router(admin_forms_router)

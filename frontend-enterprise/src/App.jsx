@@ -6,7 +6,7 @@ import Servicios from "./pages/Servicios/Servicios";
 import Alertas from "./pages/Alertas";
 import Administracion from "./pages/Administracion/Administracion";
 import CrearCliente from "./pages/CrearCliente";
-import Contratos from "./pages/Contratos";
+import Contratos from "./pages/Contratos/Contratos";
 
 
 function App() {

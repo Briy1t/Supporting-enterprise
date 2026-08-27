@@ -5,7 +5,8 @@ export default function LeadCard({ lead, cambiarEstado, descartar }) {
   const navigate = useNavigate();
 
   return (
-<div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+    <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+      
       {/* Nombre */}
       <h4 className="font-bold text-slate-900 text-base">{lead.contacto}</h4>
 
@@ -43,8 +44,9 @@ export default function LeadCard({ lead, cambiarEstado, descartar }) {
         </div>
       )}
 
-      {/* Grid de Botones Simétricos (2 por fila) */}
+      {/* Grid de Botones */}
       <div className="pt-2 border-t border-slate-100 grid grid-cols-2 gap-2">
+
         <button
           onClick={() => cambiarEstado(lead.id, "llamado")}
           className="flex items-center justify-center gap-1.5 w-full py-1.5 text-xs font-semibold bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition"
@@ -67,7 +69,7 @@ export default function LeadCard({ lead, cambiarEstado, descartar }) {
         </button>
 
         <button
-          onClick={() => (window.location.href = `/contratos?cliente=${lead.id}`)}
+          onClick={() => (window.location.href = `/contratos?lead=${lead.id}`)}
           className="flex items-center justify-center gap-1.5 w-full py-1.5 text-xs font-semibold bg-indigo-50 text-indigo-600 hover:bg-indigo-100 rounded-lg transition"
         >
           <FileText className="w-3.5 h-3.5" /> Contrato
@@ -88,6 +90,7 @@ export default function LeadCard({ lead, cambiarEstado, descartar }) {
         >
           <Trash2 className="w-3.5 h-3.5" /> Descartar
         </button>
+
       </div>
     </div>
   );

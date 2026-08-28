@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends, UploadFile, File
+from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
 from sqlalchemy.orm import Session
 from datetime import datetime
 from fastapi.responses import FileResponse
-
+import os 
 from app.database import get_db
 from app.models.contratos import Contrato, HistorialContrato
 
@@ -33,7 +33,6 @@ def obtener_contrato_por_lead(lead_id: int, db: Session = Depends(get_db)):
             for h in historial
         ]
     }
-
 
 
 @router.post("/subir/{cliente_id}")
@@ -84,8 +83,47 @@ def marcar_firmado(cliente_id: int, db: Session = Depends(get_db)):
 
     return {"status": "ok"}
 
+@router.get("/descargar/{lead_id}")
+def descargar_contrato(lead_id: int, db: Session = Depends(get_db)):
+    contrato = db.query(Contrato).filter_by(lead_id=lead_id).first()
 
-@router.get("/descargar/{cliente_id}")
-def descargar_contrato(cliente_id: int):
-    ruta = f"contratos/{cliente_id}.pdf"
-    return FileResponse(ruta, media_type="application/pdf")
+    if not contrato or not contrato.archivo_pdf:
+        raise HTTPException(status_code=404, detail="PDF no encontrado")
+
+    ruta_absoluta = os.path.abspath(contrato.archivo_pdf)
+
+    if not os.path.exists(ruta_absoluta):
+        raise HTTPException(status_code=404, detail="El archivo PDF no existe en el servidor")
+
+    return FileResponse(
+        ruta_absoluta,
+        media_type="application/pdf",
+        filename=f"contrato_{contrato.id}.pdf"
+    )
+
+    
+@router.get("/cliente/{cliente_id}")
+def obtener_contrato_por_cliente(cliente_id: int, db: Session = Depends(get_db)):
+    contrato = db.query(Contrato).filter_by(cliente_id=cliente_id).first()
+    historial = db.query(HistorialContrato).filter_by(cliente_id=cliente_id).all()
+
+    if not contrato:
+        return {"contrato": None, "historial": []}
+
+    return {
+        "contrato": {
+            "id": contrato.id,
+            "servicios": contrato.servicios,
+            "duracion": contrato.duracion,
+            "politicas": contrato.politicas,
+            "estado": contrato.estado,
+            "archivo_pdf": contrato.archivo_pdf,
+            "fecha_creacion": contrato.fecha_creacion,
+            "fecha_envio": contrato.fecha_envio,
+            "fecha_firma": contrato.fecha_firma,
+        },
+        "historial": [
+            {"fecha": h.fecha, "accion": h.accion}
+            for h in historial
+        ]
+    }

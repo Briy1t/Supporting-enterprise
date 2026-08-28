@@ -12,7 +12,7 @@ export default function ServiciosPage() {
   const [modal, setModal] = useState({ visible: false, accion: null, servicio: null });
 
   const cargarServicios = async () => {
-    const res = await fetch("http://localhost:8001/servicios/");
+    const res = await fetch("http://localhost:8001/servicios");
     const data = await res.json();
     setServicios(data);
   };

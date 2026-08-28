@@ -1,28 +1,155 @@
 from fpdf import FPDF
+import os
+from datetime import datetime
+
+class PDFContrato(FPDF):
+    def header(self):
+        # Logo
+        try:
+            self.image("logo_supporting.png", x=10, y=8, w=20)
+        except:
+            pass  # Si no existe el logo, no rompe el PDF
+
+        # Nombre corporativo
+        self.set_xy(35, 10)
+        self.set_font("Arial", "B", 16)
+        self.set_text_color(59, 130, 246)  # Azul #3b82f6
+        self.cell(0, 10, "SUPPORTING — Servicios IT Profesionales", ln=True)
+
+        # Línea separadora
+        self.set_draw_color(59, 130, 246)
+        self.set_line_width(0.8)
+        self.line(10, 28, 200, 28)
+
+        self.ln(12)
+
+    def footer(self):
+        self.set_y(-20)
+        self.set_font("Arial", "I", 10)
+        self.set_text_color(100, 100, 100)
+        self.cell(0, 10, "SUPPORTING — Soluciones IT para empresas | contactosupporting@gmail.com", 0, 0, "C")
+
 
 def generar_pdf_contrato(lead, contrato):
-    pdf = FPDF()
+
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    pdf_dir = os.path.abspath(os.path.join(BASE_DIR, "..", "..", "contratos_generados"))
+    os.makedirs(pdf_dir, exist_ok=True)
+
+    ruta = os.path.abspath(os.path.join(pdf_dir, f"contrato_{contrato.id}.pdf"))
+
+    pdf = PDFContrato()
     pdf.add_page()
-    pdf.set_font("Arial", size=12)
+    pdf.set_auto_page_break(auto=True, margin=15)
 
-    pdf.cell(200, 10, txt="CONTRATO DE SERVICIO", ln=True)
+    # ============================
+    # TÍTULO
+    # ============================
+    pdf.set_font("Arial", "B", 18)
+    pdf.set_text_color(0, 0, 0)
+    pdf.cell(0, 10, "CONTRATO DE PRESTACIÓN DE SERVICIOS IT", ln=True)
+    pdf.ln(5)
 
+    # ============================
+    # DATOS DEL CLIENTE
+    # ============================
+    pdf.set_font("Arial", "B", 14)
+    pdf.cell(0, 10, "Datos del Cliente", ln=True)
+
+    pdf.set_font("Arial", "", 12)
+    pdf.multi_cell(0, 8,
+        f"Empresa: {lead.empresa or 'N/A'}\n"
+        f"Representante: {lead.contacto}\n"
+        f"Correo: {lead.correo}\n"
+        f"Teléfono: {lead.telefono}\n"
+        f"Fecha de emisión: {datetime.utcnow().strftime('%d/%m/%Y')}\n"
+        f"Duración del servicio: {contrato.duracion}"
+    )
+    pdf.ln(5)
+
+    # ============================
+    # TABLA DE SERVICIOS
+    # ============================
+    pdf.set_font("Arial", "B", 14)
+    pdf.cell(0, 10, "Servicios Contratados", ln=True)
+
+    # Encabezado de tabla
+    pdf.set_font("Arial", "B", 12)
+    pdf.set_fill_color(59, 130, 246)  # Azul corporativo
+    pdf.set_text_color(255, 255, 255)
+    pdf.cell(100, 10, "Servicio", border=1, ln=False, align="L", fill=True)
+    pdf.cell(40, 10, "Incluido", border=1, ln=True, align="C", fill=True)
+
+    # Filas de tabla
+    pdf.set_font("Arial", "", 12)
+    pdf.set_text_color(0, 0, 0)
+
+    for servicio in contrato.servicios:
+        pdf.cell(100, 10, servicio, border=1, ln=False)
+        pdf.cell(40, 10, "Sí", border=1, ln=True, align="C")
+
+    pdf.ln(5)
+
+
+    # ============================
+    # CLÁUSULAS
+    # ============================
+    pdf.set_font("Arial", "B", 14)
+    pdf.cell(0, 10, "Cláusulas del Contrato", ln=True)
+
+    pdf.set_font("Arial", "", 12)
+    clausulas = """
+1. Objeto del contrato
+SUPPORTING se compromete a prestar los servicios IT detallados en el presente documento, garantizando calidad, continuidad y soporte técnico especializado.
+
+2. Confidencialidad
+Ambas partes se comprometen a mantener la confidencialidad de toda la información técnica, comercial y personal intercambiada durante la vigencia del contrato.
+
+3. Protección de datos (RGPD)
+SUPPORTING cumple con el Reglamento General de Protección de Datos (RGPD). Los datos del cliente serán utilizados exclusivamente para la prestación del servicio.
+
+4. Obligaciones del cliente
+- Facilitar información veraz y actualizada.
+- Permitir el acceso a los sistemas cuando sea necesario para el soporte.
+- Cumplir con las recomendaciones técnicas del proveedor.
+
+5. Obligaciones del proveedor
+- Prestar los servicios contratados con profesionalidad.
+- Informar de incidencias críticas.
+- Mantener la seguridad y privacidad de los datos.
+
+6. Limitación de responsabilidad
+SUPPORTING no será responsable de daños derivados de un uso indebido de los sistemas por parte del cliente o de terceros.
+
+7. Renovación y terminación
+El contrato se renovará automáticamente salvo notificación expresa con 30 días de antelación. El cliente podrá solicitar la terminación anticipada por escrito.
+
+8. Jurisdicción
+Ambas partes se someten a los juzgados y tribunales de Castellón.
+"""
+    pdf.multi_cell(0, 8, clausulas)
     pdf.ln(10)
-    pdf.cell(200, 10, txt=f"Empresa: {lead.empresa}", ln=True)
-    pdf.cell(200, 10, txt=f"Contacto: {lead.contacto}", ln=True)
-    pdf.cell(200, 10, txt=f"Correo: {lead.correo}", ln=True)
-    pdf.cell(200, 10, txt=f"Teléfono: {lead.telefono}", ln=True)
 
+    # ============================
+    # FIRMAS
+    # ============================
+    pdf.set_font("Arial", "B", 14)
+    pdf.cell(0, 10, "Firmas", ln=True)
+
+    pdf.set_font("Arial", "", 12)
+    pdf.cell(0, 8, "Firma del Cliente:", ln=True)
+    pdf.ln(15)
+    pdf.line(10, pdf.get_y(), 100, pdf.get_y())
     pdf.ln(10)
-    pdf.multi_cell(0, 10, txt=f"Servicios contratados:\n{', '.join(contrato.servicios)}")
 
+    pdf.cell(0, 8, "Firma del Proveedor (SUPPORTING):", ln=True)
+    pdf.ln(15)
+    pdf.line(10, pdf.get_y(), 100, pdf.get_y())
     pdf.ln(10)
-    pdf.multi_cell(0, 10, txt=f"Duración: {contrato.duracion}")
 
-    pdf.ln(10)
-    pdf.multi_cell(0, 10, txt=f"Políticas:\n{contrato.politicas}")
-
-    ruta = f"contratos_generados/contrato_{contrato.id}.pdf"
+    # ============================
+    # GUARDAR PDF
+    # ============================
     pdf.output(ruta)
 
     return ruta

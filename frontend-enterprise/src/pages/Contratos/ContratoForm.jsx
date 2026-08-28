@@ -11,7 +11,6 @@ export default function ContratoForm({ leadId, serviciosSeleccionados, correoEnv
       body: JSON.stringify({
         servicios: serviciosSeleccionados,
         duracion,
-        politicas,
         correo_envio: correoEnvio,
       }),
     });
@@ -29,22 +28,14 @@ export default function ContratoForm({ leadId, serviciosSeleccionados, correoEnv
           <select
             value={duracion}
             onChange={(e) => setDuracion(e.target.value)}
-            className="w-full p-2.5 text-sm border border-slate-300 rounded-lg bg-slate-50 focus:bg-white"
+            className="w-full p-2 border rounded-lg"
           >
-            <option value="6 meses">6 meses (piloto)</option>
-            <option>12 meses</option>
-            <option>24 meses</option>
-            <option>36 meses</option>
+            <option value="12 meses">12 meses </option>
+            <option value="6 meses">6 meses</option>
+            <option value="3 meses">3 meses</option>
+            <option value="24 meses">24 meses</option>
+            <option value="36 meses">36 meses</option>
           </select>
-        </div>
-
-        <div className="space-y-1">
-          <label className="text-xs font-semibold text-slate-600">Políticas (opcional)</label>
-          <textarea
-            value={politicas}
-            onChange={(e) => setPoliticas(e.target.value)}
-            className="w-full p-2.5 text-sm border border-slate-300 rounded-lg bg-slate-50 focus:bg-white h-24"
-          />
         </div>
 
         <div className="flex justify-end gap-3 pt-3 border-t">

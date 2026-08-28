@@ -12,20 +12,16 @@ from app.schemas.contrato import ContratoCreate
 
 router = APIRouter(prefix="/contratos-generar", tags=["Generar Contratos"])
 
-# -----------------------------
-# 1. Políticas por defecto
-# -----------------------------
-POLITICAS_DEFAULT = """
-1. El cliente acepta las condiciones del servicio contratado.
-2. El proveedor garantiza soporte técnico según el plan seleccionado.
-3. La monitorización personalizada se ajustará a los parámetros definidos.
-4. Las actualizaciones se aplicarán sin afectar la operatividad del cliente.
-5. El contrato tiene validez durante el periodo acordado.
-"""
+# ============================
+# Cargar políticas default
+# ============================
+with open("app/politicas_default.txt", "r", encoding="utf-8") as f:
+    POLITICAS_DEFAULT = f.read()
 
-# -----------------------------
-# 2. Generar PDF corporativo
-# -----------------------------
+
+# ============================
+# Generar PDF
+# ============================
 def generar_pdf_contrato(lead, contrato):
     pdf = FPDF()
     pdf.add_page()
@@ -53,9 +49,10 @@ def generar_pdf_contrato(lead, contrato):
 
     return ruta
 
-# -----------------------------
-# 3. Generar contrato
-# -----------------------------
+
+# ============================
+# Generar contrato
+# ============================
 @router.post("/generar/{lead_id}")
 def generar_contrato(lead_id: int, data: ContratoCreate, db: Session = Depends(get_db)):
     lead = db.query(Lead).filter(Lead.id == lead_id).first()
@@ -63,21 +60,20 @@ def generar_contrato(lead_id: int, data: ContratoCreate, db: Session = Depends(g
     if not lead:
         raise HTTPException(status_code=404, detail="Lead no encontrado")
 
-    # Obtener servicios desde la BD
-    servicios_db = db.query(Servicio).filter(Servicio.id.in_(data.servicios))
+    servicios_db = db.query(Servicio).filter(Servicio.id.in_(data.servicios)).all()
     servicios_nombres = [s.nombre for s in servicios_db]
 
     if not servicios_nombres:
         raise HTTPException(status_code=400, detail="Servicios no válidos")
 
-    politicas = data.politicas or POLITICAS_DEFAULT
+    politicas_finales = data.politicas or POLITICAS_DEFAULT
 
     contrato = Contrato(
         lead_id=lead_id,
         cliente_id=None,
         servicios=servicios_nombres,
         duracion=data.duracion,
-        politicas=politicas,
+        politicas=politicas_finales,
         estado="generado",
         fecha_creacion=datetime.utcnow()
     )
@@ -86,11 +82,16 @@ def generar_contrato(lead_id: int, data: ContratoCreate, db: Session = Depends(g
     db.commit()
     db.refresh(contrato)
 
+    # Generar PDF
     ruta_pdf = generar_pdf_contrato(lead, contrato)
     contrato.archivo_pdf = ruta_pdf
     db.commit()
+    
+    return {"status": "ok", "contrato_id": contrato.id}
 
+    # Crear historial (con contrato_id obligatorio)
     historial = HistorialContrato(
+        contrato_id=contrato.id,
         lead_id=lead_id,
         accion="Contrato generado",
         fecha=datetime.utcnow()
@@ -100,9 +101,10 @@ def generar_contrato(lead_id: int, data: ContratoCreate, db: Session = Depends(g
 
     return {"status": "ok", "contrato_id": contrato.id}
 
-# -----------------------------
-# 4. Enviar contrato por correo
-# -----------------------------
+
+# ============================
+# Enviar contrato por correo
+# ============================
 from fastapi_mail import FastMail, MessageSchema
 
 @router.post("/enviar/{lead_id}")
@@ -124,6 +126,7 @@ async def enviar_contrato_route(lead_id: int, db: Session = Depends(get_db)):
     await fm.send_message(message)
 
     historial = HistorialContrato(
+        contrato_id=contrato.id,
         lead_id=lead_id,
         accion="Contrato enviado",
         fecha=datetime.utcnow()

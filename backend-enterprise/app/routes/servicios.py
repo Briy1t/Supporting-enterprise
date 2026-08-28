@@ -25,8 +25,9 @@ def actualizar_servicio_route(servicio_id: int, data: ServicioUpdate, db: Sessio
     if not servicio:
         raise HTTPException(404, "Servicio no encontrado")
 
-    for campo, valor in data.dict(exclude_unset=True).items():
-        setattr(servicio, campo, valor)
+    for campo, valor in data.dict().items():
+        if valor is not None:
+            setattr(servicio, campo, valor)
 
     db.commit()
     db.refresh(servicio)

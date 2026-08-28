@@ -15,8 +15,10 @@ class Contrato(Base):
     servicios = Column(JSON, nullable=False)
     duracion = Column(String, nullable=False)
     politicas = Column(Text, nullable=False)
+    
     estado = Column(String, default="generado")
     archivo_pdf = Column(String, nullable=True)
+    
     fecha_creacion = Column(DateTime, default=datetime.utcnow)
     fecha_envio = Column(DateTime, nullable=True)
     fecha_firma = Column(DateTime, nullable=True)

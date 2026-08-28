@@ -6,10 +6,18 @@ export default function ServicioForm({ servicio, onClose, onSave }) {
   const [precio, setPrecio] = useState(servicio?.precio || "");
 
   const guardar = async () => {
-    const payload = { nombre, descripcion, precio: Number(precio) };
+    const precioNumber = parseFloat(precio);
+
+    const payload = {
+      nombre: nombre || servicio.nombre,
+      descripcion: descripcion || servicio.descripcion,
+      precio: isNaN(precioNumber) ? servicio.precio : precioNumber,
+      activo: servicio?.activo ?? true
+    };
+
     const url = servicio
       ? `http://localhost:8001/servicios/${servicio.id}`
-      : "http://localhost:8001/servicios/";
+      : "http://localhost:8001/servicios";
 
     const method = servicio ? "PUT" : "POST";
 
@@ -33,7 +41,7 @@ export default function ServicioForm({ servicio, onClose, onSave }) {
           <label className="text-xs font-semibold text-slate-600">Nombre</label>
           <input
             value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
+            onChange={(e) => setNombre(e.target.value ?? "")}
             className="w-full p-2.5 text-sm border border-slate-300 rounded-lg bg-slate-50 focus:bg-white"
           />
         </div>
@@ -42,7 +50,7 @@ export default function ServicioForm({ servicio, onClose, onSave }) {
           <label className="text-xs font-semibold text-slate-600">Descripción</label>
           <textarea
             value={descripcion}
-            onChange={(e) => setDescripcion(e.target.value)}
+            onChange={(e) => setDescripcion(e.target.value ?? "")}
             className="w-full p-2.5 text-sm border border-slate-300 rounded-lg bg-slate-50 focus:bg-white h-24"
           />
         </div>
@@ -52,7 +60,8 @@ export default function ServicioForm({ servicio, onClose, onSave }) {
           <input
             type="number"
             value={precio}
-            onChange={(e) => setPrecio(e.target.value)}
+            onChange={(e) => setPrecio(parseFloat(e.target.value))}
+            step="0.01"
             className="w-full p-2.5 text-sm border border-slate-300 rounded-lg bg-slate-50 focus:bg-white"
           />
         </div>

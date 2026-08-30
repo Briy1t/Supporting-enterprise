@@ -40,6 +40,11 @@ def crear_cliente(db: Session, data: dict):
     if db.query(Cliente).filter(Cliente.email == data["correo"]).first():
         raise Exception("El correo ya está registrado como cliente")
 
+    empresa_ingresada = data.get("empresa")
+    if empresa_ingresada and empresa_ingresada.strip():
+        if db.query(Cliente).filter(Cliente.empresa == empresa_ingresada).first():
+            raise Exception("La empresa ya está registrada como cliente")
+    
     if db.query(Cliente).filter(Cliente.empresa == data["empresa"]).first():
         raise Exception("La empresa ya está registrada como cliente")
 
@@ -49,11 +54,19 @@ def crear_cliente(db: Session, data: dict):
     if db.query(AuthUser).filter(AuthUser.empresa == data["empresa"]).first():
         raise Exception("La empresa ya está registrada como usuario")
 
+    # 1. Convertir la lista de IDs de servicios [1, 3] a String "1, 3" para guardar en Cliente.servicio
+    servicios_list = data.get("servicios", [])
+    if isinstance(servicios_list, list) and len(servicios_list) > 0:
+        servicios_str = ", ".join(map(str, servicios_list))
+    else:
+        servicios_str = data.get("servicio")
+
+    # 2. Crear instancia del cliente
     nuevo = Cliente(
         nombre=data["contacto"],
         email=data["correo"],
         empresa=data["empresa"],
-        servicio=data.get("servicio"),
+        servicio=servicios_str, # Guardado como string "1, 3"
         telefono=data.get("telefono"),
         lead_id=data.get("lead_id"),
         estado="activo",
@@ -64,15 +77,7 @@ def crear_cliente(db: Session, data: dict):
     db.commit()
     db.refresh(nuevo)
 
-    for servicio in data.get("servicios", []):
-        nuevo_servicio = Servicio(
-            nombre=servicio,
-            cliente_id=nuevo.id
-        )
-        db.add(nuevo_servicio)
-
-    db.commit()
-
+    # 3. Generar usuario de autenticación
     usuario_generado = generar_usuario(data["contacto"], db)
     password_temporal = generar_password()
 
@@ -86,11 +91,12 @@ def crear_cliente(db: Session, data: dict):
 
     usuario_creado = crear_usuario(db, usuario_data)
 
-    if "form_id" in data:
+    if "form_id" in data and data["form_id"]:
         formulario = db.query(Contactos).filter(Contactos.id == data["form_id"]).first()
         if formulario:
             formulario.estado = "convertido"
             db.commit()
+
     return {
         "cliente": nuevo,
         "usuario": usuario_creado,
@@ -101,6 +107,12 @@ def crear_cliente(db: Session, data: dict):
 def listar_clientes(db: Session):
     return db.query(Cliente).filter(Cliente.estado == "activo").all()
 
+def marcar_cliente_vencido(db: Session, cliente_id: int):
+    cliente = db.query(Cliente).filter(Cliente.id == cliente_id).first()
+    if cliente:
+        cliente.estado = "vencido"
+        db.commit()
+    return cliente
 
 def obtener_cliente(db: Session, cliente_id: int):
     return db.query(Cliente).filter(Cliente.id == cliente_id).first()

@@ -1,5 +1,5 @@
 from app.database import Base
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String, Boolean, Date
 from sqlalchemy.orm import relationship
 
 class Cliente(Base):
@@ -11,8 +11,12 @@ class Cliente(Base):
     telefono = Column(String,unique=True, nullable=False)
     empresa = Column(String, nullable=True)
     servicio = Column(String, nullable=True)
+    
     estado = Column(String, default="activo")
+    fecha_vencimiento = Column(Date, nullable=True) 
+    
     lead_id = Column(Integer, nullable=True) 
-    preferencia = Column(String, nullable=True)
-
+    preferencia = Column(String, nullable=True)  
+    
+      
     contratos = relationship("Contrato", back_populates="cliente", uselist=False)

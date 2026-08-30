@@ -1,5 +1,5 @@
 from pydantic import BaseModel, ConfigDict
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import EmailStr, Field
 
 class ClienteBase(BaseModel):
     nombre: str
@@ -23,7 +23,7 @@ class ClienteCreate(BaseModel):
         max_length=15,
         pattern=r"^\+?\d[\d\s]{7,14}$"
     )        
-    servicio: list[str] | None = None
+    servicios: list[int] | None = []
     lead_id: int | None = None
     preferencia: str | None = None
 
@@ -38,7 +38,7 @@ class ClienteResponse(BaseModel):
         pattern=r"^\+?\d[\d\s]{7,14}$"
     )    
     empresa: str
-    servicio: list[str] | None
+    servicio: str | None = None
     estado: str
     lead_id: int | None = None
     preferencia: str | None = None

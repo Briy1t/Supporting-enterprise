@@ -5,7 +5,7 @@ export default function Kanban() {
   const [leads, setLeads] = useState([]);
 
   const cargarLeads = () => {
-    fetch("http://localhost:8001/admin/forms")
+    fetch("http://localhost:8001/admin/forms/")
       .then((res) => res.json())
       .then((data) => setLeads(data))
       .catch((err) => console.error("Error cargando leads:", err));
@@ -13,6 +13,32 @@ export default function Kanban() {
 
   useEffect(() => {
     cargarLeads();
+
+    const ws = new WebSocket("ws://localhost:8001/admin/forms/ws");
+
+    ws.onopen = () => {
+      console.log("WebSocket conectado al Kanban");
+    };
+
+    ws.onmessage = (event) => {
+      try {
+        const payload = JSON.parse(event.data);
+        if (payload.event === "NUEVO_LEAD") {
+          // Evitar duplicados si el lead ya existe en el estado
+          setLeads((prev) => {
+            const existe = prev.some((l) => l.id === payload.data.id);
+            if (existe) return prev;
+            return [payload.data, ...prev];
+          });
+        }
+      } catch (err) {
+        console.error("Error procesando mensaje de WebSocket:", err);
+      }
+    };
+
+    ws.onerror = (error) => console.error("Error en WebSocket:", error);
+
+    return () => ws.close();
   }, []);
 
   const cambiarEstado = async (id, nuevoEstado) => {
@@ -34,8 +60,6 @@ export default function Kanban() {
     { titulo: "Llamados", estado: "llamado", badge: "bg-blue-50 text-blue-700" },
     { titulo: "Esperando Respuesta", estado: "esperando_respuesta", badge: "bg-amber-50 text-amber-700" },
     { titulo: "Aceptados", estado: "aceptado", badge: "bg-emerald-50 text-emerald-700" },
-    { titulo: "Convertidos", estado: "convertido", badge: "bg-indigo-50 text-indigo-700" },
-    { titulo: "Descartados", estado: "descartado", badge: "bg-rose-50 text-rose-700" },
   ];
 
   return (

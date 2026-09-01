@@ -1,5 +1,6 @@
 from app.database import Base
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.orm import relationship
 
 
 class Tecnico(Base):
@@ -9,3 +10,5 @@ class Tecnico(Base):
     nombre = Column(String, nullable=False)
     especialidad = Column(String, nullable=False)
     disponibilidad = Column(String, default="disponible")  # disponible / ocupado
+
+    tickets = relationship("Ticket", back_populates="tecnico")

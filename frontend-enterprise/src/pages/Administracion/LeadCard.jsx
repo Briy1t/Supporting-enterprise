@@ -14,8 +14,6 @@ import {
 
 export default function LeadCard({ lead, cambiarEstado, descartar }) {
   const navigate = useNavigate();
-
-  // Estado para abrir/cerrar el modal de confirmación
   const [mostrarModal, setMostrarModal] = useState(false);
 
   const confirmarDescarte = () => {
@@ -30,35 +28,58 @@ export default function LeadCard({ lead, cambiarEstado, descartar }) {
         <h4 className="font-bold text-slate-900 text-base">{lead.contacto}</h4>
 
         {/* Datos de contacto */}
-        <div className="space-y-1.5 text-xs text-slate-600">
+        <div className="space-y-2 text-xs text-slate-600">
+          
+          {/* Correo Electrónico (Con botón azul interactivo) */}
           <div className="flex items-center gap-2">
             <a
               href={`https://mail.google.com/mail/?view=cm&fs=1&to=${lead.correo}`}
               target="_blank"
               rel="noreferrer"
-              className="p-1 bg-slate-100 hover:bg-slate-200 rounded text-slate-700 transition"
+              className="p-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg transition-colors flex items-center justify-center shrink-0"
+              title="Redactar correo en Gmail"
             >
               <Mail className="w-3.5 h-3.5" />
             </a>
-            <span className="truncate">{lead.correo}</span>
+            <a 
+              href={`mailto:${lead.correo}`}
+              className="hover:underline text-slate-800 font-semibold truncate"
+              title="Enviar correo"
+            >
+              {lead.correo}
+            </a>
           </div>
 
-          {lead.telefono && (
+          {/* Teléfono Clickeable para Llamar */}
+          {lead.telefono && lead.telefono.trim() !== "" ? (
             <div className="flex items-center gap-2">
               <a
-                href={`tel:${lead.telefono}`}
-                className="p-1 bg-slate-100 hover:bg-slate-200 rounded text-slate-700 transition"
+                href={`tel:${lead.telefono.replace(/\s+/g, '')}`}
+                className="p-1.5 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg transition-colors flex items-center justify-center shrink-0"
+                title="Hacer llamada telefónica"
               >
                 <Phone className="w-3.5 h-3.5" />
               </a>
-              <span>{lead.telefono}</span>
+              <a 
+                href={`tel:${lead.telefono.replace(/\s+/g, '')}`} 
+                className="hover:underline text-slate-800 font-semibold"
+              >
+                {lead.telefono}
+              </a>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 text-slate-400 italic">
+              <div className="p-1.5 bg-slate-100 rounded-lg shrink-0">
+                <Phone className="w-3.5 h-3.5 text-slate-400" />
+              </div>
+              <span>Sin teléfono registrado</span>
             </div>
           )}
         </div>
 
         {/* Mensaje */}
         {lead.mensaje && (
-          <div className="p-2 bg-slate-50 rounded text-xs text-slate-600 italic border border-slate-100">
+          <div className="p-2 bg-slate-50 rounded-lg text-xs text-slate-600 italic border border-slate-100">
             "{lead.mensaje}"
           </div>
         )}
@@ -87,7 +108,7 @@ export default function LeadCard({ lead, cambiarEstado, descartar }) {
           </button>
 
           <button
-            onClick={() => (window.location.href = `/contratos?lead=${lead.id}`)}
+            onClick={() => navigate(`/contratos?lead=${lead.id}`)}
             className="flex items-center justify-center gap-1.5 w-full py-1.5 text-xs font-semibold bg-indigo-50 text-indigo-600 hover:bg-indigo-100 rounded-lg transition cursor-pointer"
           >
             <FileText className="w-3.5 h-3.5" /> Contrato
@@ -95,14 +116,13 @@ export default function LeadCard({ lead, cambiarEstado, descartar }) {
 
           <button
             onClick={() =>
-              (window.location.href = `/crear-cliente?contacto=${lead.contacto}&correo=${lead.correo}&telefono=${lead.telefono}&lead_id=${lead.id}`)
+              navigate(`/crear-cliente?contacto=${encodeURIComponent(lead.contacto)}&correo=${encodeURIComponent(lead.correo)}&telefono=${encodeURIComponent(lead.telefono || '')}&lead_id=${lead.id}`)
             }
             className="flex items-center justify-center gap-1.5 w-full py-1.5 text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg transition cursor-pointer"
           >
             <UserPlus className="w-3.5 h-3.5" /> Crear Cliente
           </button>
 
-          {/* Botón que ABRE el modal en lugar de descartar directo */}
           <button
             onClick={() => setMostrarModal(true)}
             className="flex items-center justify-center gap-1.5 w-full py-1.5 text-xs font-semibold bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-lg transition cursor-pointer"
@@ -112,7 +132,7 @@ export default function LeadCard({ lead, cambiarEstado, descartar }) {
         </div>
       </div>
 
-      {/* MODAL DE CONFIRMACIÓN */}
+      {/* MODAL DE CONFIRMACIÓN DE ELIMINACIÓN */}
       {mostrarModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4">
           <div className="bg-white rounded-2xl p-6 max-w-sm w-full border border-slate-100 shadow-xl space-y-4 animate-in fade-in zoom-in-95 duration-150">

@@ -23,16 +23,17 @@ export default function Contratos() {
   const [historialContratos, setHistorialContratos] = useState([]);
   const [correoEnvio, setCorreoEnvio] = useState("");
   const [mostrarForm, setMostrarForm] = useState(false);
-  const [modal, setModal] = useState({ visible: false, accion: null });
+  const [modal, setModal] = useState({ visible: false, accion: null, contratoId: null });
 
   const params = new URLSearchParams(window.location.search);
-  const leadId = params.get("lead");
+  // Convertimos a número para evitar inconsistencias de tipos
+  const leadId = params.get("lead") ? Number(params.get("lead")) : null;
 
   const cargarTodo = () => {
     if (!leadId) return;
 
-    // 1. Cargar Lead
-    fetch(`http://localhost:8001/admin/forms/${leadId}`)
+    // 1. Cargar Lead (Ruta corregida con /lead/)
+    fetch(`http://localhost:8001/admin/forms/lead/${leadId}`)
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (data) {
@@ -42,9 +43,12 @@ export default function Contratos() {
       });
 
     // 2. Cargar Contrato Actual
-    fetch(`http://localhost:8001/contratos/lead/${leadId}`)
+    fetch(`http://localhost:8001/contratos/${leadId}`)
       .then((res) => (res.ok ? res.json() : null))
-      .then((data) => setContratoActual(data))
+      .then((data) => {
+        const contrato = Array.isArray(data) ? data[0] : data;
+        setContratoActual(contrato || null);
+      })
       .catch(() => setContratoActual(null));
 
     // 3. Cargar Servicios
@@ -69,7 +73,7 @@ export default function Contratos() {
 
   const guardarCambiosLead = async () => {
     try {
-      await fetch(`http://localhost:8001/admin/forms/${leadId}`, {
+      await fetch(`http://localhost:8001/admin/forms/lead/${leadId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(lead),
@@ -109,34 +113,32 @@ export default function Contratos() {
     }
   };
 
-// En Contratos.jsx
-
-const enviarContratoPorEmail = async () => {
-  if (!modal.contratoId) {
-    alert("No se ha especificado un contrato válido.");
-    return;
-  }
-
-  try {
-    const response = await fetch(`http://localhost:8001/contratos/enviar/${modal.contratoId}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ correo: correoEnvio }),
-    });
-
-    if (response.ok) {
-      alert("Contrato enviado correctamente por correo.");
-      cargarTodo(); // Recargar historial
-    } else {
-      const err = await response.json();
-      alert(`Error: ${err.detail || "No se pudo enviar el correo"}`);
+  const enviarContratoPorEmail = async () => {
+    if (!modal.contratoId) {
+      alert("No se ha especificado un contrato válido.");
+      return;
     }
-  } catch (error) {
-    alert("Error en la conexión con el servidor.");
-  } finally {
-    setModal({ visible: false, accion: null, contratoId: null });
-  }
-};
+
+    try {
+      const response = await fetch(`http://localhost:8001/contratos/enviar/${modal.contratoId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ correo: correoEnvio }),
+      });
+
+      if (response.ok) {
+        alert("Contrato enviado correctamente por correo.");
+        cargarTodo();
+      } else {
+        const err = await response.json();
+        alert(`Error: ${err.detail || "No se pudo enviar el correo"}`);
+      }
+    } catch (error) {
+      alert("Error en la conexión con el servidor.");
+    } finally {
+      setModal({ visible: false, accion: null, contratoId: null });
+    }
+  };
 
   const subirContratoFirmado = async (file) => {
     if (!contratoActual?.id) {
@@ -395,7 +397,7 @@ const enviarContratoPorEmail = async () => {
           <ModalConfirmacion
             accion={modal.accion}
             correoEnvio={correoEnvio}
-            onClose={() => setModal({ visible: false })}
+            onClose={() => setModal({ visible: false, accion: null, contratoId: null })}
             onConfirm={enviarContratoPorEmail}
           />
         )}

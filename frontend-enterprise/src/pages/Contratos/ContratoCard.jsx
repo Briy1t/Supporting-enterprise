@@ -5,7 +5,7 @@ export default function ContratoCard({ leadId }) {
   const [contrato, setContrato] = useState(null);
 
   useEffect(() => {
-    fetch(`http://localhost:8001/contratos/lead/${leadId}`)
+    fetch(`http://localhost:8001/contratos/${leadId}`)
       .then((res) => {
         if (!res.ok) return null;
         return res.json();

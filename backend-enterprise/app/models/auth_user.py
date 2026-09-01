@@ -11,5 +11,5 @@ class AuthUser(Base):
     password = Column(String, nullable=False)
     rol = Column(String, default="cliente")
     empresa = Column(String, nullable=True)
-    estado = Column(String, default="activo")  # activo / inactivo
+    estado = Column(String, default="activo") 
     password_reset_required = Column(Boolean, default=True)

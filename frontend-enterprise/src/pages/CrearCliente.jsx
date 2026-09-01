@@ -10,84 +10,79 @@ export default function CrearCliente() {
 
   const [form, setForm] = useState({
     empresa: params.get("empresa") || "",
-    contacto: params.get("contacto") || "",
-    correo: params.get("correo") || "",
+    nombre: params.get("contacto") || "",
+    email: params.get("correo") || "",
     lead_id: params.get("lead_id") ? Number(params.get("lead_id")) : null,
     telefono: params.get("telefono") || "",
     preferencia: params.get("preferencia") || "correo",
     servicios: [],
   });
 
-  // Diagnóstico temporal en consola
-  useEffect(() => {
-    const diagnosticarServicios = async () => {
-      const contratoId = params.get("contrato_id");
-      const leadId = params.get("lead_id");
-      
-      console.log("QueryParams -> lead_id:", leadId, "contrato_id:", contratoId);
-
-      if (leadId) {
-        try {
-          const res = await fetch(`http://localhost:8001/admin/forms`);
-          const data = await res.json();
-          console.log("Datos recibidos del backend:", data);
-        } catch (err) {
-          console.error("Error en diagnóstico:", err);
-        }
-      }
-    };
-    diagnosticarServicios();
-  }, []);
-
-  // Carga de servicios del contrato
+  // Carga de servicios desde la tabla/creación de contratos
   useEffect(() => {
     const cargarServiciosDelContrato = async () => {
       try {
         const leadId = params.get("lead_id");
-        const contratoId = params.get("contrato_id");
         const serviciosUrl = params.get("servicios");
 
-        let idsServicios = [];
+        console.log("--- BUSCANDO CONTRATO DEL LEAD ---");
+        let idsOStringsServicios = [];
 
-        // 1. Si tenemos lead_id o contrato_id, consultamos a la API el contrato firmado
-        if (leadId || contratoId) {
-          const endpoint = contratoId 
-            ? `http://localhost:8001/contratos/${contratoId}`
-            : `http://localhost:8001/contratos/lead/${leadId}`;
+        if (leadId) {
+          // Ruta corregida para consultar el contrato del lead directamente por ID
+          const endpointContrato = `http://localhost:8001/contratos/${leadId}`;
+          console.log("Consultando:", endpointContrato);
 
-          const resContrato = await fetch(endpoint);
-          if (resContrato.ok) {
-            const dataContrato = await resContrato.json();
+          const res = await fetch(endpointContrato);
+          if (res.ok) {
+            const dataContrato = await res.json();
+            console.log("Contrato(s) encontrado(s):", dataContrato);
+
+            const listaContratos = Array.isArray(dataContrato) ? dataContrato : [dataContrato];
             
-            if (Array.isArray(dataContrato.servicios)) {
-              idsServicios = dataContrato.servicios.map((s) =>
-                typeof s === "object" ? Number(s.id) : Number(s)
-              );
-            }
+            listaContratos.forEach((contrato) => {
+              const items = contrato?.servicios || contrato?.servicios_contratados || contrato?.items || [];
+              items.forEach((s) => {
+                if (typeof s === "object" && s !== null) {
+                  idsOStringsServicios.push(s.id ?? s.nombre ?? s.servicio);
+                } else {
+                  idsOStringsServicios.push(s);
+                }
+              });
+            });
           }
         }
 
-        // 2. Fallback si venían por la URL
-        if (idsServicios.length === 0 && serviciosUrl) {
-          idsServicios = serviciosUrl.split(",").map(Number).filter(Boolean);
+        // Fallback por URL si fuera necesario
+        if (idsOStringsServicios.length === 0 && serviciosUrl) {
+          idsOStringsServicios = serviciosUrl.split(",").map((s) => s.trim()).filter(Boolean);
         }
 
-        // 3. Consultar la lista maestra de servicios
-        if (idsServicios.length > 0) {
-          const resCat = await fetch("http://localhost:8001/servicios");
-          if (resCat.ok) {
-            const catalogoBD = await resCat.json();
-            const coincidencia = catalogoBD.filter((s) => idsServicios.includes(Number(s.id)));
-            
-            setServiciosContratados(coincidencia);
-            setForm((prev) => ({
-              ...prev,
-              servicios: coincidencia.map((s) => Number(s.id)),
-            }));
-          }
+        console.log("Servicios extraídos del contrato:", idsOStringsServicios);
+
+        // Consultar el catálogo maestro para pintar los nombres y obtener IDs limpios
+        const resCat = await fetch("http://localhost:8001/servicios");
+        if (resCat.ok) {
+          const catalogoBD = await resCat.json();
+
+          const coincidencia = catalogoBD.filter((catItem) => {
+            return idsOStringsServicios.some((itemBuscado) => {
+              const idCoincide = Number(catItem.id) === Number(itemBuscado);
+              const nombreCoincide = String(catItem.nombre).trim().toLowerCase() === String(itemBuscado).trim().toLowerCase();
+              return idCoincide || nombreCoincide;
+            });
+          });
+
+          console.log("Servicios coincidentes:", coincidencia);
+
+          setServiciosContratados(coincidencia);
+          setForm((prev) => ({
+            ...prev,
+            servicios: coincidencia.map((s) => Number(s.id)),
+          }));
         }
       } catch (err) {
-        console.error("Error al obtener los servicios:", err);
+        console.error("Error al cargar los servicios del contrato:", err);
       } finally {
         setCargandoServicios(false);
       }
@@ -134,7 +129,6 @@ export default function CrearCliente() {
       <Sidebar />
 
       <main className="tw-layout-content max-w-2xl space-y-6">
-        {/* Encabezado */}
         <div className="flex items-center justify-between pb-4 border-b border-slate-200">
           <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
             <span className="tw-brand-icon"></span> Crear Cliente
@@ -148,7 +142,6 @@ export default function CrearCliente() {
           </button>
         </div>
 
-        {/* Formulario principal con onSubmit */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="text-xs font-semibold text-slate-600">
@@ -166,8 +159,8 @@ export default function CrearCliente() {
           <div>
             <label className="text-xs font-semibold text-slate-600">Contacto</label>
             <input 
-              name="contacto" 
-              value={form.contacto} 
+              name="nombre" 
+              value={form.nombre} 
               onChange={handleChange} 
               className="w-full p-2 text-sm border rounded-lg bg-slate-50" 
               required 
@@ -177,9 +170,9 @@ export default function CrearCliente() {
           <div>
             <label className="text-xs font-semibold text-slate-600">Correo</label>
             <input 
-              name="correo" 
+              name="email" 
               type="email" 
-              value={form.correo} 
+              value={form.email} 
               onChange={handleChange} 
               className="w-full p-2 text-sm border rounded-lg bg-slate-50" 
               required 
@@ -212,7 +205,7 @@ export default function CrearCliente() {
             ) : (
               <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl">
                 <p className="text-xs text-amber-700 font-medium">
-                  No se detectaron servicios asociados en el contrato.
+                  No se encontraron servicios asociados a este contrato en la base de datos.
                 </p>
               </div>
             )}

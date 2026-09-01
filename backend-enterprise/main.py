@@ -10,7 +10,11 @@ from sqlalchemy.orm import Session
 
 from app.database import SessionLocal, Base, engine
 from app.auto_migrate import ensure_estado_column
+
+import app.models
+
 from app.models.contratos import Contrato
+from app.models.lead import Lead
 
 # Routers
 from app.routes.auth import router as auth_router
@@ -21,7 +25,6 @@ from app.routes.tickets import router as tickets_router
 from app.routes.tecnicos import router as tecnicos_router
 from app.routes.alarmas import router as alarmas_router
 from app.routes.usuarios import router as usuarios_router
-from app.routes.lead import router as lead_router
 from app.routes.contratos import router as contratos_router
 from app.routes.contratos_generar import router as contratos_generar_router
 
@@ -99,7 +102,6 @@ app.include_router(tickets_router)
 app.include_router(tecnicos_router)
 app.include_router(alarmas_router)
 app.include_router(usuarios_router)
-app.include_router(lead_router)
 app.include_router(contratos_router)
 app.include_router(contratos_generar_router)
 

@@ -1,19 +1,16 @@
+import secrets
+import string
 from sqlalchemy.orm import Session
 from app.models.cliente import Cliente
 from app.models.auth_user import AuthUser
 from app.controllers.auth_controller import crear_usuario
 from app.schemas.auth_user import AuthCreate
 from app.models.servicio import Servicio
-from app.models.contacto import Contactos         
-
-
-import secrets
-import string
-
+from app.models.contacto import Contactos   
+from app.models.lead import Lead     
 
 def generar_usuario(contacto: str, db: Session):
     base = contacto.replace(" ", "").lower()
-
     if not db.query(AuthUser).filter(AuthUser.usuario == base).first():
         return base
 
@@ -24,19 +21,11 @@ def generar_usuario(contacto: str, db: Session):
             return candidato
         contador += 1
 
-
 def generar_password():
     chars = string.ascii_letters + string.digits
     return ''.join(secrets.choice(chars) for _ in range(10)) + "!"
 
-
-def obtener_tabla_formulario(tipo: str):
-    return Contactos
-
-
-
 def crear_cliente(db: Session, data: dict):
-
     if db.query(Cliente).filter(Cliente.email == data["correo"]).first():
         raise Exception("El correo ya está registrado como cliente")
 
@@ -44,29 +33,23 @@ def crear_cliente(db: Session, data: dict):
     if empresa_ingresada and empresa_ingresada.strip():
         if db.query(Cliente).filter(Cliente.empresa == empresa_ingresada).first():
             raise Exception("La empresa ya está registrada como cliente")
-    
-    if db.query(Cliente).filter(Cliente.empresa == data["empresa"]).first():
-        raise Exception("La empresa ya está registrada como cliente")
+        if db.query(AuthUser).filter(AuthUser.empresa == empresa_ingresada).first():
+            raise Exception("La empresa ya está registrada como usuario")
 
     if db.query(AuthUser).filter(AuthUser.email == data["correo"]).first():
         raise Exception("El correo ya está registrado como usuario")
 
-    if db.query(AuthUser).filter(AuthUser.empresa == data["empresa"]).first():
-        raise Exception("La empresa ya está registrada como usuario")
-
-    # 1. Convertir la lista de IDs de servicios [1, 3] a String "1, 3" para guardar en Cliente.servicio
     servicios_list = data.get("servicios", [])
     if isinstance(servicios_list, list) and len(servicios_list) > 0:
         servicios_str = ", ".join(map(str, servicios_list))
     else:
         servicios_str = data.get("servicio")
 
-    # 2. Crear instancia del cliente
     nuevo = Cliente(
         nombre=data["contacto"],
         email=data["correo"],
-        empresa=data["empresa"],
-        servicio=servicios_str, # Guardado como string "1, 3"
+        empresa=data.get("empresa"),
+        servicio=servicios_str,
         telefono=data.get("telefono"),
         lead_id=data.get("lead_id"),
         estado="activo",
@@ -74,10 +57,7 @@ def crear_cliente(db: Session, data: dict):
     )
 
     db.add(nuevo)
-    db.commit()
-    db.refresh(nuevo)
-
-    # 3. Generar usuario de autenticación
+  
     usuario_generado = generar_usuario(data["contacto"], db)
     password_temporal = generar_password()
 
@@ -86,23 +66,26 @@ def crear_cliente(db: Session, data: dict):
         email=data["correo"],
         password=password_temporal,
         rol="cliente",
-        empresa=data["empresa"]
+        empresa=data.get("empresa")
     )
 
     usuario_creado = crear_usuario(db, usuario_data)
 
-    if "form_id" in data and data["form_id"]:
-        formulario = db.query(Contactos).filter(Contactos.id == data["form_id"]).first()
-        if formulario:
-            formulario.estado = "convertido"
-            db.commit()
+    target_lead_id = data.get("lead_id")
+    if target_lead_id:
+        lead = db.query(Lead).filter(Lead.id == target_lead_id).first()       
+    if lead:
+            lead.estado = "convertido"
+            db.add(lead)
+    
+    db.commit()
+    db.refresh(nuevo)
 
     return {
         "cliente": nuevo,
         "usuario": usuario_creado,
         "password_temporal": password_temporal
     }
-
 
 def listar_clientes(db: Session):
     return db.query(Cliente).filter(Cliente.estado == "activo").all()
@@ -117,7 +100,6 @@ def marcar_cliente_vencido(db: Session, cliente_id: int):
 def obtener_cliente(db: Session, cliente_id: int):
     return db.query(Cliente).filter(Cliente.id == cliente_id).first()
 
-
 def eliminar_cliente(db: Session, cliente_id: int):
     cliente = obtener_cliente(db, cliente_id)
     if cliente:
@@ -125,13 +107,8 @@ def eliminar_cliente(db: Session, cliente_id: int):
         db.commit()
     return cliente
 
-
 def descartar_formulario(db: Session, tipo: str, form_id: int):
-    tabla = obtener_tabla_formulario(tipo)
-    if not tabla:
-        raise Exception("Tipo de formulario no válido")
-
-    formulario = db.query(tabla).filter(tabla.id == form_id).first()
+    formulario = db.query(Contactos).filter(Contactos.id == form_id).first()
     if not formulario:
         raise Exception("Formulario no encontrado")
 
@@ -139,14 +116,9 @@ def descartar_formulario(db: Session, tipo: str, form_id: int):
     db.commit()
     return formulario
 
-
 def listar_formularios_pendientes(db: Session):
-    formularios = []
-
-    formularios += db.query(Contactos).filter(Contactos.estado == "pendiente").all()
-
+    formularios = db.query(Contactos).filter(Contactos.estado == "pendiente").all()
     resultado = []
-
     for f in formularios:
         resultado.append({
             "id": f.id,
@@ -156,10 +128,8 @@ def listar_formularios_pendientes(db: Session):
             "mensaje": getattr(f, "mensaje", None),
             "tipo": getattr(f, "tipo", None),
             "estado": getattr(f, "estado", None),
-            
             "privacidad": getattr(f, "privacidad", None),
             "fecha_aceptacion": getattr(f, "fecha_aceptacion", None),
             "ip_usuario": getattr(f, "ip_usuario", None)
         })
-
     return resultado

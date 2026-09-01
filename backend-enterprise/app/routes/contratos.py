@@ -1,10 +1,11 @@
+from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
+from fastapi.responses import FileResponse
+
 import os
 import shutil
 import time
 
 from datetime import datetime
-from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
-from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, EmailStr
 
@@ -17,20 +18,14 @@ from app.database import get_db
 from app.models.contratos import Contrato, HistorialContrato
 from app.models.lead import Lead
 from app.routes.contratos_generar import generar_pdf_contrato
+from app.utils.email import enviar_correo_contrato
 
 router = APIRouter(prefix="/contratos", tags=["Contratos"])
 
 class EnviarEmailSchema(BaseModel):
     correo: EmailStr
-    
-SMTP_SERVER = "smtp.ethereal.email"
-SMTP_PORT = 587
-SMTP_USER = "neha.carroll@ethereal.email"  
-SMTP_PASS = "ht9vTSfyFmNA46TTYS"  
 
-SENDER_EMAIL = "SUPPORTING <soporte@supporting.com>"
-
-@router.get("/lead/{lead_id}")
+@router.get("/{lead_id}")
 def obtener_contrato_por_lead(lead_id: int, db: Session = Depends(get_db)):
     contrato = db.query(Contrato).filter(Contrato.lead_id == lead_id).order_by(Contrato.id.desc()).first()
     if not contrato:
@@ -172,54 +167,12 @@ def enviar_contrato_email(contrato_id: int, data: EnviarEmailSchema, db: Session
         raise HTTPException(status_code=404, detail="El archivo PDF físicamente no existe en el servidor")
 
     try:
-        # Pausa preventiva de 1 segundo para no sobrepasar la cuota/segundo de Mailtrap
         time.sleep(1)
 
-        # 1. Crear el mensaje
-        msg = MIMEMultipart()
-        msg['From'] = SENDER_EMAIL
-        msg['To'] = data.correo
-        msg['Subject'] = f"Contrato de Prestación de Servicios #{contrato.id:04d} - SUPPORTING"
+        # Usamos la función centralizada de utilidades de correo
+        enviar_correo_contrato(email_destino=data.correo, contrato_id=contrato.id, ruta_pdf=path_pdf)
 
-        cuerpo = f"""\
-            Hola,
-
-            Adjunto encontrarás el Contrato de Prestación de Servicios (Ref: #CTR-{contrato.id:04d}) emitido por SUPPORTING.
-
-            Por favor, revísalo y devuélvelo firmado.
-
-            Saludos cordiales,
-            Equipo de SUPPORTING
-            """
-        msg.attach(MIMEText(cuerpo, 'plain'))
-
-        # 2. Adjuntar el PDF
-        with open(path_pdf, "rb") as f:
-            adjunto = MIMEApplication(f.read(), _subtype="pdf")
-            adjunto.add_header('Content-Disposition', 'attachment', filename=f"Contrato_{contrato.id}.pdf")
-            msg.attach(adjunto)
-
-        max_reintentos = 3
-        for intento in range(max_reintentos):
-            try:
-                with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
-                    server.starttls()
-                    server.login(SMTP_USER, SMTP_PASS)
-                    server.sendmail(SENDER_EMAIL, [data.correo], msg.as_string())
-                break  # Si el envío fue exitoso, sale del ciclo
-            except smtplib.SMTPResponseException as e:
-                if e.smtp_code == 550 and intento < max_reintentos - 1:
-                    time.sleep(2)  # Espera 2 segundos antes de reintentar
-                else:
-                    raise e
-                
-        # 3. Envío seguro vía Mailtrap SMTP
-        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
-            server.starttls()
-            server.login(SMTP_USER, SMTP_PASS)
-            server.sendmail(SENDER_EMAIL, [data.correo], msg.as_string())
-
-        # 4. Actualizar estado e historial
+        # Actualizar estado e historial
         contrato.estado = "enviado"
 
         historial = HistorialContrato(
@@ -237,3 +190,12 @@ def enviar_contrato_email(contrato_id: int, data: EnviarEmailSchema, db: Session
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Error al enviar el correo: {str(e)}")
+@router.get("/")
+def listar_o_filtrar_contratos(lead_id: int | None = None, db: Session = Depends(get_db)):
+    if lead_id:
+        contrato = db.query(Contrato).filter(Contrato.lead_id == lead_id).order_by(Contrato.id.desc()).first()
+        if not contrato:
+            return None 
+        return contrato
+    
+    return db.query(Contrato).all()

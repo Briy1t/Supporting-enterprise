@@ -1,6 +1,13 @@
 import LeadCard from "./LeadCard";
 
-export default function Column({ titulo, badgeStyle, leads, cambiarEstado, descartar }) {
+export default function Column({ 
+  titulo, 
+  badgeStyle, 
+  leads, 
+  cambiarEstado, 
+  descartar,
+  convertirACliente 
+}) {
   return (
     <div className="w-80 min-w-[320px] bg-slate-100/70 p-4 rounded-xl border border-slate-200/60 flex flex-col gap-3">
       {/* Header de la columna */}
@@ -24,6 +31,7 @@ export default function Column({ titulo, badgeStyle, leads, cambiarEstado, desca
               lead={lead}
               cambiarEstado={cambiarEstado}
               descartar={descartar}
+              convertirACliente={convertirACliente} // 👈 2. SE LA PASAMOS A LEADCARD
             />
           ))
         )}

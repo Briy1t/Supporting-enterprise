@@ -15,7 +15,7 @@ router = APIRouter(prefix="/admin/forms", tags=["Admin - Formularios"])
 # ============================
 
 @router.post("/importar", response_model=LeadResponse)
-def importar_lead_route(data: LeadCreate, db: Session = Depends(get_db)):
+async def importar_lead_route(data: LeadCreate, db: Session = Depends(get_db)):
     lead_existente = db.query(Lead).filter(
         Lead.correo == data.correo,
         Lead.telefono == data.telefono,
@@ -31,9 +31,9 @@ def importar_lead_route(data: LeadCreate, db: Session = Depends(get_db)):
     nuevo_lead = Lead(
         empresa=data.empresa,
         contacto=data.contacto,
-        correo=data.correo,
-        telefono=data.telefono,
-        mensaje=data.mensaje,
+        correo=data.correo or "",
+        telefono=data.telefono or "",
+        mensaje=data.mensaje or "",
         origen=data.origen or "contacto_general",
         estado="pendiente"
     )
@@ -41,6 +41,18 @@ def importar_lead_route(data: LeadCreate, db: Session = Depends(get_db)):
     db.add(nuevo_lead)
     db.commit()
     db.refresh(nuevo_lead)
+    
+    lead_dict = {
+        "id": nuevo_lead.id,
+        "contacto": nuevo_lead.contacto,
+        "correo": nuevo_lead.correo,
+        "telefono": nuevo_lead.telefono,
+        "empresa": nuevo_lead.empresa,
+        "mensaje": nuevo_lead.mensaje,
+        "estado": nuevo_lead.estado
+    }
+    
+    await manager.broadcast({"event": "NUEVO_LEAD", "data": lead_dict})
 
     return nuevo_lead
 

@@ -10,7 +10,7 @@ export default function ModalConfirmacion({ accion, correoEnvio, onClose, onConf
 
           {accion === "enviar" && (
             <p className="text-sm text-slate-700 text-center">
-              ¿Deseas enviar el contrato al correo<br />
+              ¿Deseas enviar el contrato al correo? <br />
               <span className="font-semibold text-blue-600">{correoEnvio}</span>?
             </p>
           )}

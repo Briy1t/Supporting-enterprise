@@ -1,5 +1,5 @@
 from app.database import Base
-from sqlalchemy import Column, Integer, String, Boolean, Date
+from sqlalchemy import Column, Integer, String, Boolean, Date, ForeignKey
 from sqlalchemy.orm import relationship
 
 class Cliente(Base):
@@ -13,10 +13,12 @@ class Cliente(Base):
     servicio = Column(String, nullable=True)
     
     estado = Column(String, default="activo")
-    fecha_vencimiento = Column(Date, nullable=True) 
-    
-    lead_id = Column(Integer, nullable=True) 
+    fecha_vencimiento = Column(Date, nullable=True)
     preferencia = Column(String, nullable=True)  
-    
-      
-    contratos = relationship("Contrato", back_populates="cliente", uselist=False)
+     
+    lead_id = Column(Integer, ForeignKey("leads.id", ondelete="SET NULL"), nullable=True)   
+  
+    contratos = relationship("Contrato", back_populates="cliente", cascade="all, delete-orphan")
+    historiales = relationship("HistorialContrato", back_populates="cliente", cascade="all, delete-orphan")
+    tickets = relationship("Ticket", back_populates="cliente", cascade="all, delete-orphan")
+    alarmas = relationship("Alarma", back_populates="cliente", cascade="all, delete-orphan")

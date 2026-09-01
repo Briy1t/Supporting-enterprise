@@ -15,15 +15,15 @@ class ClienteBase(BaseModel):
 
 
 class ClienteCreate(BaseModel):
-    contacto: str
-    correo: str
-    empresa: str
+    nombre: str
+    email: str
+    empresa: str | None = None
     telefono: str = Field(
         min_length=8,
         max_length=15,
         pattern=r"^\+?\d[\d\s]{7,14}$"
-    )        
-    servicios: list[int] | None = []
+    )         
+    servicios: list[int] = []
     lead_id: int | None = None
     preferencia: str | None = None
 

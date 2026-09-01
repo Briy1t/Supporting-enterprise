@@ -1,7 +1,10 @@
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
+from app.utils.email import enviar_correo_contrato
+
 import os
 import traceback
 from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException
+
 from sqlalchemy.orm import Session
 
 # Importaciones de ReportLab
@@ -19,6 +22,8 @@ from app.models.contratos import Contrato, HistorialContrato
 from app.schemas.contrato import ContratoCreate
 
 router = APIRouter(prefix="/contratos-generar", tags=["Generar Contratos"])
+
+SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
 
 POLITICAS_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "politicas_default.txt")
 if not os.path.exists(POLITICAS_PATH):
@@ -287,7 +292,11 @@ def generar_pdf_contrato(lead, contrato):
 
 
 @router.post("/generar/{lead_id}")
-def generar_contrato(lead_id: int, data: ContratoCreate, db: Session = Depends(get_db)):
+def generar_contrato(
+    lead_id: int,
+    data: ContratoCreate, 
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db)):
     try:
         lead = db.query(Lead).filter(Lead.id == lead_id).first()
         if not lead:

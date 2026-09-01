@@ -10,8 +10,9 @@ class Lead(Base):
     empresa = Column(String, nullable=True)
     contacto = Column(String, nullable=False)
     correo = Column(String, nullable=False)
-    telefono = Column(String, nullable=False)
-    mensaje = Column(String, nullable=False)
+    telefono = Column(String, nullable=True)
+    mensaje = Column(String, nullable=True)
     estado = Column(String, default="pendiente")
 
-    contratos = relationship("Contrato", back_populates="lead")
+    contratos = relationship("Contrato", back_populates="lead", cascade="all, delete-orphan")   
+    historiales = relationship("HistorialContrato", back_populates="lead", cascade="all, delete-orphan")

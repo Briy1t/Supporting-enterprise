@@ -6,9 +6,9 @@ class Contactos(Base):
     __tablename__ = "contactos"
 
     id = Column(Integer, primary_key=True, index=True)
-    nombre = Column(String,unique=True, nullable=False)
-    email = Column(String,unique=True, nullable=False)
-    telefono = Column(String,unique=True, nullable=False)
+    nombre = Column(String, nullable=False)
+    email = Column(String, unique=True, nullable=False) 
+    telefono = Column(String, unique=True, nullable=False) 
     mensaje = Column(String, nullable=False)
     tipo = Column(String, default="general")
     privacidad = Column(Boolean, nullable=False)

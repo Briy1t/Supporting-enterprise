@@ -30,9 +30,9 @@ export default function ContratoForm({ leadId, serviciosSeleccionados, correoEnv
             onChange={(e) => setDuracion(e.target.value)}
             className="w-full p-2 border rounded-lg"
           >
-            <option value="12 meses">12 meses </option>
+            <option value="3 meses">3 meses </option>
             <option value="6 meses">6 meses</option>
-            <option value="3 meses">3 meses</option>
+            <option value="12 meses">12 meses</option>
             <option value="24 meses">24 meses</option>
             <option value="36 meses">36 meses</option>
           </select>

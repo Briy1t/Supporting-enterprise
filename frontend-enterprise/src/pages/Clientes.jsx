@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import { ArrowLeft, Eye, Edit3 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function Clientes() {
   const [clientes, setClientes] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch("http://localhost:8001/clientes")
@@ -23,7 +25,7 @@ export default function Clientes() {
           </h1>
 
           <button
-            onClick={() => window.history.back()}
+            onClick={() => navigate(-1)}
             className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition"
           >
             <ArrowLeft className="w-4 h-4" /> Volver
@@ -52,23 +54,23 @@ export default function Clientes() {
                 clientes.map((c) => (
                   <tr key={c.id} className="hover:bg-slate-50/50 transition">
                     <td className="p-3.5 font-medium text-slate-900">{c.nombre}</td>
-                    <td className="p-3.5">{c.empresa}</td>
-                    <td className="p-3.5">{c.servicio}</td>
+                    <td className="p-3.5">{c.empresa || "N/A"}</td>
+                    <td className="p-3.5">{typeof c.servicio === "object" ? c.servicio?.nombre : (c.servicio || "Sin servicio")}</td>
                     <td className="p-3.5">
                       <span className="px-2 py-0.5 rounded text-xs font-semibold bg-blue-50 text-blue-700">
-                        {c.estado}
+                        {c.estado || "Activo"}
                       </span>
                     </td>
                     <td className="p-3.5 text-right space-x-2">
                       <button
-                        onClick={() => (window.location.href = `/clientes/${c.id}`)}
+                        onClick={() => navigate(`/clientes/${c.id}`)}
                         className="p-1.5 text-slate-600 hover:text-blue-600 hover:bg-slate-100 rounded-lg transition"
                         title="Ver detalle"
                       >
                         <Eye className="w-4 h-4" />
                       </button>
                       <button
-                        onClick={() => (window.location.href = `/editar-cliente/${c.id}`)}
+                        onClick={() => navigate(`/editar-cliente/${c.id}`)}
                         className="p-1.5 text-slate-600 hover:text-amber-600 hover:bg-slate-100 rounded-lg transition"
                         title="Editar"
                       >

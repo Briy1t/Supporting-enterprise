@@ -6,10 +6,7 @@ from sqlalchemy import pool
 from alembic import context
 
 from app.database import Base
-from app.models.lead import Lead
-from app.models.cliente import Cliente
-from app.models.contratos import Contrato
-from app.models.contratos import HistorialContrato
+import app.models
 
 config = context.config
 

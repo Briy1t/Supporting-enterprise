@@ -61,6 +61,9 @@ def enviar_correo_contrato(email_destino: str, contrato_id: int, ruta_pdf: str =
 
     Adjunto a este correo encontrarás la copia oficial en PDF con todos los detalles de los servicios y condiciones acordadas.
 
+    por favor, revisa el documento y, si estás de acuerdo, procede a firmarlo según las instrucciones proporcionadas.
+    y posteriormente, envíanos una copia firmada para completar el proceso.
+    
     Saludos,
     El equipo de Supporting.
     """

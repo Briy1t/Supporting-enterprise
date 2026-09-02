@@ -26,7 +26,7 @@ def generar_password():
     return ''.join(secrets.choice(chars) for _ in range(10)) + "!"
 
 def crear_cliente(db: Session, data: dict):
-    if db.query(Cliente).filter(Cliente.email == data["correo"]).first():
+    if db.query(Cliente).filter(Cliente.email == data["email"]).first():
         raise Exception("El correo ya está registrado como cliente")
 
     empresa_ingresada = data.get("empresa")
@@ -36,7 +36,7 @@ def crear_cliente(db: Session, data: dict):
         if db.query(AuthUser).filter(AuthUser.empresa == empresa_ingresada).first():
             raise Exception("La empresa ya está registrada como usuario")
 
-    if db.query(AuthUser).filter(AuthUser.email == data["correo"]).first():
+    if db.query(AuthUser).filter(AuthUser.email == data["email"]).first():
         raise Exception("El correo ya está registrado como usuario")
 
     servicios_list = data.get("servicios", [])
@@ -46,8 +46,8 @@ def crear_cliente(db: Session, data: dict):
         servicios_str = data.get("servicio")
 
     nuevo = Cliente(
-        nombre=data["contacto"],
-        email=data["correo"],
+        nombre=data["nombre"],
+        email=data["email"],
         empresa=data.get("empresa"),
         servicio=servicios_str,
         telefono=data.get("telefono"),
@@ -58,12 +58,12 @@ def crear_cliente(db: Session, data: dict):
 
     db.add(nuevo)
   
-    usuario_generado = generar_usuario(data["contacto"], db)
+    usuario_generado = generar_usuario(data["nombre"], db)
     password_temporal = generar_password()
 
     usuario_data = AuthCreate(
         usuario=usuario_generado,
-        email=data["correo"],
+        email=data["email"],
         password=password_temporal,
         rol="cliente",
         empresa=data.get("empresa")
@@ -74,7 +74,7 @@ def crear_cliente(db: Session, data: dict):
     target_lead_id = data.get("lead_id")
     if target_lead_id:
         lead = db.query(Lead).filter(Lead.id == target_lead_id).first()       
-    if lead:
+        if lead:
             lead.estado = "convertido"
             db.add(lead)
     

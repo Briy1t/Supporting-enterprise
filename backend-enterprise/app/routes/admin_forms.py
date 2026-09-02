@@ -8,6 +8,7 @@ from app.database import get_db
 from app.models.lead import Lead
 from app.schemas.lead import LeadCreate, LeadResponse
 from app.controllers.cliente import crear_cliente
+import asyncio
 
 router = APIRouter(prefix="/admin/forms", tags=["Admin - Formularios"])
 
@@ -37,7 +38,7 @@ async def websocket_endpoint(websocket: WebSocket):
     await manager.connect(websocket)
     try:
         while True:
-            await websocket.receive_text()
+            await asyncio.sleep(1)
     except WebSocketDisconnect:
         manager.disconnect(websocket)
 

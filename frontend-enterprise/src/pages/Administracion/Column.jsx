@@ -9,11 +9,11 @@ export default function Column({
   convertirACliente 
 }) {
   return (
-    <div className="w-80 min-w-[320px] bg-slate-100/70 p-4 rounded-xl border border-slate-200/60 flex flex-col gap-3">
+    <div className="tw-kanban-column">
       {/* Header de la columna */}
-      <div className="flex items-center justify-between px-1">
-        <h3 className="font-semibold text-sm text-slate-700">{titulo}</h3>
-        <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${badgeStyle}`}>
+      <div className="tw-kanban-title-container">
+        <h3 className="tw-kanban-title">{titulo}</h3>
+        <span className={`tw-kanban-counter ${badgeStyle}`}>
           {leads.length}
         </span>
       </div>
@@ -31,7 +31,7 @@ export default function Column({
               lead={lead}
               cambiarEstado={cambiarEstado}
               descartar={descartar}
-              convertirACliente={convertirACliente} // 👈 2. SE LA PASAMOS A LEADCARD
+              convertirACliente={convertirACliente}
             />
           ))
         )}

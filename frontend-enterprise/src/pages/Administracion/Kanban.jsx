@@ -23,12 +23,11 @@ export default function Kanban() {
     ws.onmessage = (event) => {
       try {
         const payload = JSON.parse(event.data);
+
         if (payload.event === "NUEVO_LEAD") {
-          // Evitar duplicados si el lead ya existe en el estado
           setLeads((prev) => {
             const existe = prev.some((l) => l.id === payload.data.id);
-            if (existe) return prev;
-            return [payload.data, ...prev];
+            return existe ? prev : [payload.data, ...prev];
           });
         }
       } catch (err) {
@@ -36,7 +35,9 @@ export default function Kanban() {
       }
     };
 
-    ws.onerror = (error) => console.error("Error en WebSocket:", error);
+    ws.onerror = (error) => {
+      console.error("Error en WebSocket:", error);
+    };
 
     return () => ws.close();
   }, []);
@@ -63,7 +64,7 @@ export default function Kanban() {
   ];
 
   return (
-    <div className="flex gap-4 overflow-x-auto pb-4 pt-2 snap-x">
+    <div className="tw-kanban-container">
       {columnas.map((col) => (
         <Column
           key={col.estado}

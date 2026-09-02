@@ -31,7 +31,7 @@ def crear_cliente_route(
 
         background_tasks.add_task(
             enviar_correo_credenciales,
-            payload["correo"],
+            payload["email"],
             username,
             res["password_temporal"]
         )

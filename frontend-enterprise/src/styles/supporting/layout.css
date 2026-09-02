@@ -4,8 +4,7 @@
 }
 
 @utility tw-layout-content {
-  @apply flex-1 p-8 sm:p-10 max-w-7xl mx-auto;
-}
+  @apply flex-1 p-6 sm:p-8 w-full flex flex-col min-w-0;}
 
 @utility tw-top-panel {
   @apply p-8 rounded-2xl shadow-lg mb-8 relative overflow-hidden;

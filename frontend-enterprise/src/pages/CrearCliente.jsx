@@ -18,7 +18,6 @@ export default function CrearCliente() {
     servicios: [],
   });
 
-  // Carga de servicios desde la tabla/creación de contratos
   useEffect(() => {
     const cargarServiciosDelContrato = async () => {
       try {
@@ -29,7 +28,6 @@ export default function CrearCliente() {
         let idsOStringsServicios = [];
 
         if (leadId) {
-          // Ruta corregida para consultar el contrato del lead directamente por ID
           const endpointContrato = `http://localhost:8001/contratos/${leadId}`;
           console.log("Consultando:", endpointContrato);
 
@@ -53,14 +51,12 @@ export default function CrearCliente() {
           }
         }
 
-        // Fallback por URL si fuera necesario
         if (idsOStringsServicios.length === 0 && serviciosUrl) {
           idsOStringsServicios = serviciosUrl.split(",").map((s) => s.trim()).filter(Boolean);
         }
 
         console.log("Servicios extraídos del contrato:", idsOStringsServicios);
 
-        // Consultar el catálogo maestro para pintar los nombres y obtener IDs limpios
         const resCat = await fetch("http://localhost:8001/servicios");
         if (resCat.ok) {
           const catalogoBD = await resCat.json();
@@ -99,6 +95,7 @@ export default function CrearCliente() {
     e.preventDefault();
 
     try {
+      
       const res = await fetch("http://localhost:8001/clientes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -111,7 +108,7 @@ export default function CrearCliente() {
       }
 
       const data = await res.json();
-      alert(`¡Cliente creado con éxito!\n\nUsuario: ${data.usuario?.usuario || 'N/A'}\nContraseña: ${data.password_temporal || 'N/A'}`);
+      alert(`¡Cliente creado con éxito!.`);
 
       if (form.lead_id) {
         await fetch(`http://localhost:8001/leads/${form.lead_id}`, { method: "DELETE" });
@@ -128,119 +125,133 @@ export default function CrearCliente() {
     <div className="tw-layout">
       <Sidebar />
 
-      <main className="tw-layout-content max-w-2xl space-y-6">
-        <div className="flex items-center justify-between pb-4 border-b border-slate-200">
-          <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="tw-brand-icon"></span> Crear Cliente
-          </h1>
+      <main className="tw-layout-content space-y-6">
+        
+        {/* CABECERA ESTÉTICA */}
+        <div className="flex items-center justify-between pb-4 border-b border-slate-200/80">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+              <span className="tw-brand-icon"></span> Crear Cliente
+            </h1>
+          </div>
 
           <button
             onClick={() => window.history.back()}
-            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition cursor-pointer"
+            className="flex items-center gap-2 px-3.5 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 shadow-sm transition-all cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4" /> Volver
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="text-xs font-semibold text-slate-600">
-              Empresa <span className="text-slate-400 font-normal">(Opcional)</span>
-            </label>
-            <input 
-              name="empresa" 
-              value={form.empresa} 
-              onChange={handleChange} 
-              placeholder="Ej: Tech Solutions o déjalo vacío si es persona natural"
-              className="w-full p-2 text-sm border border-slate-200 rounded-lg bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition" 
-            />
-          </div>
-
-          <div>
-            <label className="text-xs font-semibold text-slate-600">Contacto</label>
-            <input 
-              name="nombre" 
-              value={form.nombre} 
-              onChange={handleChange} 
-              className="w-full p-2 text-sm border rounded-lg bg-slate-50" 
-              required 
-            />
-          </div>
-
-          <div>
-            <label className="text-xs font-semibold text-slate-600">Correo</label>
-            <input 
-              name="email" 
-              type="email" 
-              value={form.email} 
-              onChange={handleChange} 
-              className="w-full p-2 text-sm border rounded-lg bg-slate-50" 
-              required 
-            />
-          </div>
-
-          <div>
-            <label className="text-xs font-semibold text-slate-600 flex items-center gap-1.5 mb-2">
-              <ShieldCheck className="w-4 h-4 text-blue-600" />
-              Servicios Vinculados en el Contrato
-            </label>
+        {/* CONTENEDOR DEL FORMULARIO CON MAQUETACIÓN PREMIUM */}
+        <form onSubmit={handleSubmit} className="tw-form-container">
+          
+          <div className="tw-form-grid">
             
-            {cargandoServicios ? (
-              <div className="flex items-center gap-2 p-3 text-xs text-slate-500 bg-slate-50 rounded-xl">
-                <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
-                <span>Cargando servicios del contrato...</span>
-              </div>
-            ) : serviciosContratados.length > 0 ? (
-              <div className="flex flex-wrap gap-2 p-3 bg-blue-50/50 border border-blue-100 rounded-xl">
-                {serviciosContratados.map((s) => (
-                  <div
-                    key={s.id}
-                    className="flex items-center gap-2 px-3 py-1.5 bg-white border border-blue-200 rounded-lg shadow-sm"
-                  >
-                    <CheckCircle2 className="w-4 h-4 text-blue-600" />
-                    <span className="text-xs font-medium text-slate-800">{s.nombre}</span>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl">
-                <p className="text-xs text-amber-700 font-medium">
+            {/* Empresa (Ocupa las 2 columnas) */}
+            <div className="tw-form-group-full">
+              <label className="tw-form-label">
+                Empresa <span className="tw-form-label-optional">(Opcional)</span>
+              </label>
+              <input 
+                name="empresa" 
+                value={form.empresa} 
+                onChange={handleChange} 
+                placeholder="Ej: Tech Solutions o déjalo vacío si es persona natural"
+                className="tw-form-input" 
+              />
+            </div>
+
+            {/* Contacto */}
+            <div className="tw-form-group">
+              <label className="tw-form-label">Contacto</label>
+              <input 
+                name="nombre" 
+                value={form.nombre} 
+                onChange={handleChange} 
+                placeholder="Nombre completo"
+                className="tw-form-input" 
+                required 
+              />
+            </div>
+
+            {/* Correo */}
+            <div className="tw-form-group">
+              <label className="tw-form-label">Correo</label>
+              <input 
+                name="email" 
+                type="email" 
+                value={form.email} 
+                onChange={handleChange} 
+                placeholder="ejemplo@correo.com"
+                className="tw-form-input" 
+                required 
+              />
+            </div>
+
+            {/* Teléfono */}
+            <div className="tw-form-group">
+              <label className="tw-form-label">Teléfono</label>
+              <input 
+                name="telefono" 
+                type="tel" 
+                value={form.telefono} 
+                onChange={handleChange} 
+                placeholder="Ej: 639481938"
+                className="tw-form-input" 
+              />
+            </div>
+
+            {/* Preferencia de contacto */}
+            <div className="tw-form-group">
+              <label className="tw-form-label">Preferencia de contacto</label>
+              <select 
+                name="preferencia"
+                value={form.preferencia}
+                onChange={handleChange}
+                className="tw-form-input"
+              >
+                <option value="correo">Correo</option>
+                <option value="telefono">Teléfono</option>
+                <option value="whatsapp">WhatsApp</option>
+              </select>
+            </div>
+
+            {/* Servicios Vinculados en el Contrato (Ocupa las 2 columnas) */}
+            <div className="tw-form-group-full">
+              <label className="tw-form-label">
+                <ShieldCheck className="w-4 h-4 text-blue-600 shrink-0" />
+                Servicios Vinculados en el Contrato
+              </label>
+              
+              {cargandoServicios ? (
+                <div className="tw-services-box items-center justify-center py-6 text-slate-400">
+                  <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
+                  <span>Cargando servicios del contrato...</span>
+                </div>
+              ) : serviciosContratados.length > 0 ? (
+                <div className="tw-services-box">
+                  {serviciosContratados.map((s) => (
+                    <div key={s.id} className="tw-service-badge-checked">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" />
+                      <span>{s.nombre}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-700 font-medium mt-1">
                   No se encontraron servicios asociados a este contrato en la base de datos.
-                </p>
-              </div>
-            )}
+                </div>
+              )}
+            </div>
+
           </div>
 
-          <div>
-            <label className="text-xs font-semibold text-slate-600">Teléfono</label>
-            <input 
-              name="telefono" 
-              value={form.telefono} 
-              onChange={handleChange} 
-              className="w-full p-2 text-sm border rounded-lg bg-slate-50" 
-            />
-          </div>
-
-          <div>
-            <label className="text-xs font-semibold text-slate-600">Preferencia de contacto</label>
-            <select 
-              name="preferencia" 
-              value={form.preferencia} 
-              onChange={handleChange} 
-              className="w-full p-2 text-sm border rounded-lg bg-slate-50"
-            >
-              <option value="correo">Correo</option>
-              <option value="whatsapp">WhatsApp</option>
-              <option value="llamada">Llamada</option>
-            </select>
-          </div>
-
-          <button 
-            type="submit" 
-            className="w-full py-2.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition cursor-pointer"
-          >
+          {/* Botón de envío alineado de manera elegante */}
+          <button type="submit" className="tw-btn-submit">
             Guardar Cliente
           </button>
+
         </form>
       </main>
     </div>

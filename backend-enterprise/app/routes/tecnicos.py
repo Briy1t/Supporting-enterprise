@@ -2,7 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database import get_db
+from app.utils.security import hash_password
 from app.schemas.tecnico import TecnicoCreate, TecnicoResponse
+from app.models.tecnico import Tecnico
 from app.controllers.tecnico import (
     crear_tecnico,
     listar_tecnicos,
@@ -14,8 +16,19 @@ from app.controllers.tecnico import (
 router = APIRouter(prefix="/tecnicos", tags=["Tecnicos"])
 
 @router.post("/", response_model=TecnicoResponse)
-def crear_tecnico_route(data: TecnicoCreate, db: Session = Depends(get_db)):
-    return crear_tecnico(db, data.dict())
+def crear_tecnico(data: TecnicoCreate, db: Session = Depends(get_db)):
+    nuevo = Tecnico(
+        nombre=data.nombre,
+        especialidad=data.especialidad,
+        descripcion=data.descripcion,
+        email=data.email,
+        password=hash_password(data.password)
+    )
+    db.add(nuevo)
+    db.commit()
+    db.refresh(nuevo)
+    return nuevo
+
 
 @router.get("/", response_model=list[TecnicoResponse])
 def listar_tecnicos_route(db: Session = Depends(get_db)):

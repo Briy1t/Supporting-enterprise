@@ -2,15 +2,18 @@ from pydantic import BaseModel, ConfigDict
 
 class TecnicoBase(BaseModel):
     nombre: str
-    especialidad: str
-    disponibilidad: str | None = "disponible"
+    especialidad: str | None = None
+    descripcion: str | None = None
+    email: str
+    disponible: str | None = "disponible"
 
-class TecnicoCreate(TecnicoBase):
-    pass
+class TecnicoCreate(BaseModel):
+    nombre: str
+    especialidad: str | None = None
+    descripcion: str | None = None
+    email: str
+    password: str
 
 class TecnicoResponse(TecnicoBase):
     id: int
-
     model_config = ConfigDict(from_attributes=True)
-
-

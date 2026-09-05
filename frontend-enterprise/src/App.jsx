@@ -15,13 +15,16 @@ import TecnicoTickets from "./pages/Tecnicos/pages/TecnicoTickets";
 import TecnicoAlertas from "./pages/Tecnicos/pages/TecnicoAlertas";
 import ClientesAsignados from "./pages/Tecnicos/pages/ClientesAsignados";
 
+import CrearDisponibilidad from "./pages/Tecnicos/pages/CrearDisponibilidad";
+import CrearCitaTecnico from "./pages/Tecnicos/pages/CrearCitaTecnico";
+
 import TecnicoRouter from "./modules/tecnico-panel/router/tecnicoRouter";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Panel administrativo */}
+
         <Route path="/" element={<Index />} />
         <Route path="/clientes" element={<Clientes />} />
         <Route path="/tecnicos" element={<TecnicosList />} />
@@ -31,13 +34,17 @@ function App() {
         <Route path="/tecnicos/:id/tickets" element={<TecnicoTickets />} />
         <Route path="/tecnicos/:id/alertas" element={<TecnicoAlertas />} />
         <Route path="/tecnicos/:id/clientes" element={<ClientesAsignados />} />
+        <Route path="/tecnicos/:id/disponibilidad/nueva" element={<CrearDisponibilidad />} />
+        <Route path="/tecnicos/:id/citas/nueva" element={<CrearCitaTecnico />} />
+
         <Route path="/servicios" element={<Servicios />} />
         <Route path="/alertas" element={<Alertas />} />
         <Route path="/administracion" element={<Administracion />} />
         <Route path="/crear-cliente" element={<CrearCliente />} />
         <Route path="/contratos" element={<Contratos />} />
-        <Route path="/tecnico/*" element={<TecnicoRouter />} />
 
+ 
+        <Route path="/tecnico/*" element={<TecnicoRouter />} />
 
       </Routes>
     </BrowserRouter>

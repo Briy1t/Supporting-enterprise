@@ -15,3 +15,5 @@
 @import "./styles/supporting/cards.css";
 @import "./styles/supporting/tables.css";
 @import "./styles/supporting/cliente.css";
+@import "./styles/supporting/tecnico_calendario.css";
+@import "./styles/supporting/tecnico_modal.css";

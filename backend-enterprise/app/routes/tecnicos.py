@@ -1,17 +1,28 @@
+from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.schemas.cita_tecnico import CitaCreate
 from app.database import get_db
 from app.utils.security import hash_password
-from app.schemas.tecnico import TecnicoCreate, TecnicoResponse
+
+# Modelos (Base de datos)
 from app.models.tecnico import Tecnico
+from app.models.cita_tecnico import CitaTecnico
+from app.models.disponibilidad_tecnico import DisponibilidadTecnico
+
+# Esquemas (Pydantic / Validación de datos)
+from app.schemas.tecnico import TecnicoCreate, TecnicoResponse
+from app.schemas.cita_tecnico import CitaCreate, CitaResponse
+from app.schemas.disponibilidad_tecnico import DisponibilidadCreate, DisponibilidadResponse
+from app.schemas.eventos import EventoResponse
+
+# Controladores y Lógica de negocio
 from app.controllers.tecnico import (
     crear_tecnico,
     listar_tecnicos,
     obtener_tecnico,
     actualizar_disponibilidad,
-    eliminar_tecnico
+    eliminar_tecnico,
 )
 
 router = APIRouter(prefix="/tecnicos", tags=["Tecnicos"])
@@ -68,3 +79,36 @@ def crear_cita(tecnico_id: int, data: CitaCreate, db: Session = Depends(get_db))
     db.commit()
     db.refresh(cita)
     return cita
+
+@router.get("/{tecnico_id}/calendario", response_model=list[EventoResponse])
+def calendario_tecnico(tecnico_id: int, db: Session = Depends(get_db)):
+    disponibilidad = db.query(DisponibilidadTecnico).filter(
+        DisponibilidadTecnico.tecnico_id == tecnico_id
+    ).all()
+
+    citas = db.query(CitaTecnico).filter(
+        CitaTecnico.tecnico_id == tecnico_id
+    ).all()
+
+    eventos = []
+
+    # Disponibilidad / Turnos
+    for d in disponibilidad:
+        fecha_completa = datetime.combine(d.fecha, d.hora_inicio)
+        eventos.append({
+            "id": d.id,
+            "titulo": d.descripcion or "Turno",
+            "fecha": fecha_completa,
+            "tipo": "turno"
+        })
+
+    # Citas
+    for c in citas:
+        eventos.append({
+            "id": c.id,
+            "titulo": c.motivo,
+            "fecha": c.fecha,
+            "tipo": "cita"
+        })
+
+    return eventos

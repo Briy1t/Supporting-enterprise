@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
-import { ArrowLeft, CheckCircle2, ShieldCheck, Loader2 } from "lucide-react";
+import { ArrowLeft, CheckCircle2, ShieldCheck, Loader2, UserPlus } from "lucide-react";
 
 export default function CrearCliente() {
   const params = new URLSearchParams(window.location.search);
@@ -130,8 +130,9 @@ export default function CrearCliente() {
         {/* CABECERA ESTÉTICA */}
         <div className="flex items-center justify-between pb-4 border-b border-slate-200/80">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-              <span className="tw-brand-icon"></span> Crear Cliente
+             <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+            <UserPlus className="w-6 h-6 text-blue-600" />
+            Crear Cliente
             </h1>
           </div>
 

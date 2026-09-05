@@ -17,5 +17,6 @@ class Ticket(Base):
 
     cliente = relationship("Cliente", back_populates="tickets")
     tecnico = relationship("Tecnico", back_populates="tickets")
-    
+    cita = relationship("CitaTecnico", back_populates="ticket")
+
     

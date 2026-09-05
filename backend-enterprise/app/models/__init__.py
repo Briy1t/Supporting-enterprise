@@ -7,3 +7,5 @@ from app.models.servicio import Servicio
 from app.models.tecnico import Tecnico
 from app.models.ticket import Ticket
 from app.models.alarma import Alarma
+from app.models.cita_tecnico import CitaTecnico
+from app.models.disponibilidad_tecnico import DisponibilidadTecnico

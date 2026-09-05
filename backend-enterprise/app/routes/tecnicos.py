@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from app.schemas.cita_tecnico import CitaCreate
 from app.database import get_db
 from app.utils.security import hash_password
 from app.schemas.tecnico import TecnicoCreate, TecnicoResponse
@@ -54,3 +55,16 @@ def eliminar_tecnico_route(tecnico_id: int, db: Session = Depends(get_db)):
     if not tecnico:
         raise HTTPException(status_code=404, detail="Técnico no encontrado")
     return {"mensaje": "Técnico eliminado"}
+
+@router.post("/{tecnico_id}/citas")
+def crear_cita(tecnico_id: int, data: CitaCreate, db: Session = Depends(get_db)):
+    cita = CitaTecnico(
+        tecnico_id=tecnico_id,
+        cliente_id=data.cliente_id,
+        fecha=data.fecha,
+        motivo=data.motivo
+    )
+    db.add(cita)
+    db.commit()
+    db.refresh(cita)
+    return cita

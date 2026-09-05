@@ -1,4 +1,6 @@
 from pydantic import BaseModel, ConfigDict
+from datetime import date, time
+
 
 class TecnicoBase(BaseModel):
     nombre: str

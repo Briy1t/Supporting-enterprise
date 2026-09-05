@@ -47,7 +47,7 @@ export default function Alertas() {
         <div className="flex items-center justify-between pb-4 border-b border-slate-200">
           <div>
             <h1 className="text-2xl font-bold text-slate-900 flex items-center">
-              <span className="tw-brand-icon"></span> Alertas del Sistema
+              <Bell className="w-6 h-6 text-blue-600" /> Alertas del Sistema
             </h1>
           </div>
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
-import { ArrowLeft, Eye, Edit3 } from "lucide-react";
+import { ArrowLeft, Eye, Edit3, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function Clientes() {
@@ -21,7 +21,8 @@ export default function Clientes() {
       <main className="tw-layout-content space-y-6">
         <div className="flex items-center justify-between pb-4 border-b border-slate-200">
           <h1 className="text-2xl font-bold text-slate-900 flex items-center">
-            <span className="tw-brand-icon"></span> Clientes
+            <Users className="w-6 h-6 text-blue-600" />
+            Clientes
           </h1>
 
           <button

@@ -1,7 +1,6 @@
-from app.database import Base
-from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.orm import relationship
-
+from app.database import Base
 
 class Tecnico(Base):
     __tablename__ = "tecnicos"
@@ -13,6 +12,8 @@ class Tecnico(Base):
     email = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
     activo = Column(Boolean, default=True)
-    disponible = Column(String, default="disponible")  # disponible / ocupado
+    disponible = Column(String, default="disponible")  
 
     tickets = relationship("Ticket", back_populates="tecnico")
+    disponibilidad = relationship("DisponibilidadTecnico", back_populates="tecnico")
+    citas = relationship("CitaTecnico", back_populates="tecnico")

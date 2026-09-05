@@ -1,5 +1,5 @@
 import { NavLink, Link } from "react-router-dom";
-import { Users, Wrench, ShieldCheck, Bell, Settings, LayoutDashboard } from "lucide-react";
+import { Users, Wrench, ShieldCheck,FileText, Bell, Settings, LayoutDashboard } from "lucide-react";
 
 export default function Sidebar() {
   const menuItems = [

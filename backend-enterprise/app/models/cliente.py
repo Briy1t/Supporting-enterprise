@@ -22,3 +22,4 @@ class Cliente(Base):
     historiales = relationship("HistorialContrato", back_populates="cliente", cascade="all, delete-orphan")
     tickets = relationship("Ticket", back_populates="cliente", cascade="all, delete-orphan")
     alarmas = relationship("Alarma", back_populates="cliente", cascade="all, delete-orphan")
+    citas = relationship("CitaTecnico", back_populates="cliente")

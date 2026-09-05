@@ -173,7 +173,7 @@ export default function Contratos() {
         {/* HEADER */}
         <div className="flex items-center justify-between pb-4 border-b border-slate-200">
           <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="tw-brand-icon"></span> Gestión de Contratos
+            <FileText className="w-6 h-6 text-blue-600" /> Gestión de Contratos
           </h1>
 
           <button

@@ -27,8 +27,12 @@ from app.routes.alarmas import router as alarmas_router
 from app.routes.usuarios import router as usuarios_router
 from app.routes.contratos import router as contratos_router
 from app.routes.contratos_generar import router as contratos_generar_router
-
-
+from app.routes.tecnicos import router as tecnicos_router
+from app.routes.disponibilidad_tecnico import router as disponibilidad_router
+from app.routes.citas_tecnicos import router as citas_router
+from app.routes.calendario_tecnicos import router as calendario_router
+from app.routes.calendario_tecnico_personal import router as calendario_personal_router
+from app.routes.dashboard import router as dashboard_router
 app = FastAPI(
     title="SUPPORTING Platform Backend",
     version="1.0.0",
@@ -104,7 +108,12 @@ app.include_router(alarmas_router)
 app.include_router(usuarios_router)
 app.include_router(contratos_router)
 app.include_router(contratos_generar_router)
-
+app.include_router(tecnicos_router)
+app.include_router(disponibilidad_router)
+app.include_router(citas_router)
+app.include_router(calendario_router)
+app.include_router(calendario_personal_router)
+app.include_router(dashboard_router)
 
 @app.get("/")
 def root():

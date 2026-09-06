@@ -23,6 +23,7 @@ alembic/versions/__pycache__/
 # Uploaded files
 contratos_firmados/
 uploads/
+contratos_generados/
 
 # Cache
 .cache/

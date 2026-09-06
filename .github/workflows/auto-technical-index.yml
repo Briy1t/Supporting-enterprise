@@ -18,17 +18,17 @@ jobs:
           echo "# Technical Documentation Summary" > docs/technical/SUMMARY.md
           echo "" >> docs/technical/SUMMARY.md
 
-          echo "## Backend" >> docs/technical/SUMMARY.md
-          for file in docs/technical/Backend/*.md; do
+          echo "## Backend Enterprise" >> docs/technical/SUMMARY.md
+          for file in docs/technical/backend-enterprise/*.md; do
             filename=$(basename "$file")
-            echo "- [$filename](Backend/$filename)" >> docs/technical/SUMMARY.md
+            echo "- [$filename](backend-enterprise/$filename)" >> docs/technical/SUMMARY.md
           done
 
           echo "" >> docs/technical/SUMMARY.md
-          echo "## Frontend" >> docs/technical/SUMMARY.md
-          for file in docs/technical/Frontend/*.md; do
+          echo "## Frontend Enterprise" >> docs/technical/SUMMARY.md
+          for file in docs/technical/frontend-enterprise/*.md; do
             filename=$(basename "$file")
-            echo "- [$filename](Frontend/$filename)" >> docs/technical/SUMMARY.md
+            echo "- [$filename](frontend-enterprise/$filename)" >> docs/technical/SUMMARY.md
           done
 
       - name: Commit automático del índice técnico

@@ -18,9 +18,18 @@ jobs:
           echo "# ADR Index" > docs/ADR/ADR_INDEX.md
           echo "" >> docs/ADR/ADR_INDEX.md
 
-          for file in docs/ADR/*.md; do
-            filename=$(basename "$file")
-            echo "- [$filename]($filename)" >> docs/ADR/ADR_INDEX.md
+          for folder in docs/ADR/*; do
+            if [ -d "$folder" ]; then
+              foldername=$(basename "$folder")
+              echo "## $foldername" >> docs/ADR/ADR_INDEX.md
+
+              for file in $folder/*.md; do
+                filename=$(basename "$file")
+                echo "- [$filename]($foldername/$filename)" >> docs/ADR/ADR_INDEX.md
+              done
+
+              echo "" >> docs/ADR/ADR_INDEX.md
+            fi
           done
 
       - name: Commit automático del índice ADR

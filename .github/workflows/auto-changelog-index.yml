@@ -20,11 +20,12 @@ jobs:
 
           YEAR=$(date +'%Y')
           MONTH=$(date +'%m')
+          FOLDER="docs/changelog/$YEAR-$MONTH"
 
-          if [ -d "docs/changelog/$YEAR/$MONTH" ]; then
-            for file in docs/changelog/$YEAR/$MONTH/*.md; do
+          if [ -d "$FOLDER" ]; then
+            for file in $FOLDER/*.md; do
               filename=$(basename "$file")
-              echo "- [$filename]($YEAR/$MONTH/$filename)" >> docs/changelog/LATEST.md
+              echo "- [$filename]($YEAR-$MONTH/$filename)" >> docs/changelog/LATEST.md
             done
           else
             echo "No hay cambios este mes." >> docs/changelog/LATEST.md

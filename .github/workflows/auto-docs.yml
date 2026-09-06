@@ -20,8 +20,6 @@ jobs:
 
           mkdir -p docs/incidents/$YEAR-$MONTH
           mkdir -p docs/changelog/$YEAR-$MONTH
-          mkdir -p docs/technical/$YEAR-$MONTH
-          mkdir -p docs/architecture/$YEAR-$MONTH
           mkdir -p docs/operations/$YEAR-$MONTH
 
       - name: Mover archivos del día a carpetas mensuales
@@ -29,27 +27,14 @@ jobs:
           YEAR=$(date +'%Y')
           MONTH=$(date +'%m')
 
-          # Incidencias
           if ls docs/incidents/*.md 1> /dev/null 2>&1; then
             mv docs/incidents/*.md docs/incidents/$YEAR-$MONTH/
           fi
 
-          # Changelog
           if ls docs/changelog/*.md 1> /dev/null 2>&1; then
             mv docs/changelog/*.md docs/changelog/$YEAR-$MONTH/
           fi
 
-          # Technical
-          if ls docs/technical/*.md 1> /dev/null 2>&1; then
-            mv docs/technical/*.md docs/technical/$YEAR-$MONTH/
-          fi
-
-          # Architecture
-          if ls docs/architecture/*.md 1> /dev/null 2>&1; then
-            mv docs/architecture/*.md docs/architecture/$YEAR-$MONTH/
-          fi
-
-          # Operations
           if ls docs/operations/*.md 1> /dev/null 2>&1; then
             mv docs/operations/*.md docs/operations/$YEAR-$MONTH/
           fi

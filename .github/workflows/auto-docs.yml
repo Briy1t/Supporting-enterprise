@@ -1,0 +1,69 @@
+name: Auto Documentación (Markdown)
+
+on:
+  push:
+    paths:
+      - "docs/**"
+
+jobs:
+  archive-documentation:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v3
+
+      - name: Crear carpetas mensuales
+        run: |
+          YEAR=$(date +'%Y')
+          MONTH=$(date +'%m')
+
+          mkdir -p docs/incidents/$YEAR-$MONTH
+          mkdir -p docs/changelog/$YEAR-$MONTH
+          mkdir -p docs/technical/$YEAR-$MONTH
+          mkdir -p docs/architecture/$YEAR-$MONTH
+          mkdir -p docs/operations/$YEAR-$MONTH
+
+      - name: Mover archivos del día a carpetas mensuales
+        run: |
+          YEAR=$(date +'%Y')
+          MONTH=$(date +'%m')
+
+          # Incidencias
+          if ls docs/incidents/*.md 1> /dev/null 2>&1; then
+            mv docs/incidents/*.md docs/incidents/$YEAR-$MONTH/
+          fi
+
+          # Changelog
+          if ls docs/changelog/*.md 1> /dev/null 2>&1; then
+            mv docs/changelog/*.md docs/changelog/$YEAR-$MONTH/
+          fi
+
+          # Technical
+          if ls docs/technical/*.md 1> /dev/null 2>&1; then
+            mv docs/technical/*.md docs/technical/$YEAR-$MONTH/
+          fi
+
+          # Architecture
+          if ls docs/architecture/*.md 1> /dev/null 2>&1; then
+            mv docs/architecture/*.md docs/architecture/$YEAR-$MONTH/
+          fi
+
+          # Operations
+          if ls docs/operations/*.md 1> /dev/null 2>&1; then
+            mv docs/operations/*.md docs/operations/$YEAR-$MONTH/
+          fi
+
+      - name: Commit automático de documentación
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add docs/
+
+          if git diff-index --quiet HEAD; then
+            echo "No se detectaron archivos nuevos para archivar."
+          else
+            git commit -m "docs: archivo automático de documentación mensual (.md)"
+            git push origin HEAD:${{ github.ref }}
+          fi

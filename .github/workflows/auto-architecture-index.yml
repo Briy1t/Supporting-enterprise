@@ -1,0 +1,53 @@
+name: Auto Architecture Index
+
+on:
+  push:
+    paths:
+      - "docs/architecture/**"
+
+jobs:
+  generate-architecture-index:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v3
+
+      - name: Generar ARCHITECTURE_SUMMARY.md
+        run: |
+          echo "# Architecture Summary" > docs/architecture/ARCHITECTURE_SUMMARY.md
+          echo "" >> docs/architecture/ARCHITECTURE_SUMMARY.md
+
+          for year in docs/architecture/*; do
+            if [ -d "$year" ]; then
+              yearname=$(basename "$year")
+              echo "## $yearname" >> docs/architecture/ARCHITECTURE_SUMMARY.md
+
+              for month in $year/*; do
+                if [ -d "$month" ]; then
+                  monthname=$(basename "$month")
+                  echo "### $monthname" >> docs/architecture/ARCHITECTURE_SUMMARY.md
+
+                  for file in $month/*.md; do
+                    filename=$(basename "$file")
+                    echo "- [$filename]($yearname/$monthname/$filename)" >> docs/architecture/ARCHITECTURE_SUMMARY.md
+                  done
+                fi
+              done
+              echo "" >> docs/architecture/ARCHITECTURE_SUMMARY.md
+            fi
+          done
+
+      - name: Commit automático del índice de arquitectura
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add docs/architecture/ARCHITECTURE_SUMMARY.md
+
+          if git diff-index --quiet HEAD; then
+            echo "No hay cambios en architecture."
+          else
+            git commit -m "docs: actualización automática de ARCHITECTURE_SUMMARY.md"
+            git push origin HEAD:${{ github.ref }}
+          fi

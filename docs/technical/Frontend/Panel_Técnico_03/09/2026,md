@@ -1,0 +1,44 @@
+# Panel Técnico — 03/09/2026
+
+## 1. Estructura de Directorios del Módulo
+
+Se ha creado e inicializado la arquitectura base para la interfaz dedicada del equipo técnico. El código fuente se encuentra modulado e independiente bajo el siguiente árbol de directorios en el frontend:
+
+```text
+src/modules/tecnico-panel/
+    ├── router/
+    │   └── TecnicoRouter.jsx
+    ├── layout/
+    │   └── TecnicoLayout.jsx
+    ├── pages/
+    │   ├── TecnicoDashboard.jsx
+    │   ├── TecnicoTickets.jsx
+    │   ├── TecnicoAlertas.jsx
+    │   ├── TecnicoCalendario.jsx
+    │   ├── TecnicoClientes.jsx
+    │   └── TecnicoPerfil.jsx
+    ├── hooks/
+    │   ├── useMisTickets.js
+    │   ├── useMisAlertas.js
+    │   ├── useMiCalendario.js
+    │   ├── useMisClientes.js
+    │   └── useMiPerfil.js
+    ├── services/
+    │   ├── tickets.api.js
+    │   ├── alertas.api.js
+    │   ├── calendario.api.js
+    │   ├── clientes.api.js
+    │   └── perfil.api.js
+    └── components/
+        └── KanbanTickets.jsx
+```
+
+---
+
+## 2. Directrices de Arquitectura y Diseño (Notas Importantes)
+
+Para asegurar el desacoplamiento de componentes y mantener una separación de responsabilidades estricta, la implementación de este módulo debe respetar las siguientes reglas:
+
+* **Independencia de Interfaz (UI):** El panel técnico prescinde por completo del uso del componente *sidebar* administrativo global. Cuenta con su propio sistema de navegación e identidad visual encapsulado en `TecnicoLayout.jsx`.
+* **Encapsulamiento del Sistema:** Este módulo opera conceptual y físicamente como una aplicación totalmente independiente integrada dentro de la plataforma principal.
+* **Aislamiento de Rutas:** Está estrictamente prohibido enlazar, heredar o mezclar las rutas declaradas en `TecnicoRouter.jsx` con el enrutador general del panel de administración, previniendo fugas de accesos o colisiones en los permisos de los roles.

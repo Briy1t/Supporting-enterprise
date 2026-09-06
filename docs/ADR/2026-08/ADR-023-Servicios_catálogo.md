@@ -26,6 +26,8 @@ Could not determine join condition… no ForeignKey linking these tables.
 * **Mantener la entidad `Servicio`** estrictamente como un catálogo global.
 * **Relacionar los servicios** única y exclusivamente desde el modelo `Contrato`.
 
+---
+
 ## Consecuencias
 * **Positivas:** Se resuelve el error de mapeo de SQLAlchemy, se normaliza la base de datos de acuerdo al flujo real del negocio y se evita la duplicidad de referencias.
 * **Negativas/Riesgos:** Cualquier consulta que dependiera de `cliente.servicios` directamente en el frontend o backend deberá ser refactorizada para pasar a través del objeto `Contrato`.

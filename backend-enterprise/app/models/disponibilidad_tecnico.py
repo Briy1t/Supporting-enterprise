@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date, Time, ForeignKey
+from sqlalchemy import Column, Integer, String, Date, Time, ForeignKey, Boolean, DateTime
 from sqlalchemy.orm import relationship
 from app.database import Base
 
@@ -9,8 +9,11 @@ class DisponibilidadTecnico(Base):
     tecnico_id = Column(Integer, ForeignKey("tecnicos.id"), nullable=False)
 
     fecha = Column(Date, nullable=False)
-    hora_inicio = Column(Time, nullable=False)
-    hora_fin = Column(Time, nullable=False)
+    hora_inicio = Column(DateTime, nullable=False)
+    hora_fin = Column(DateTime, nullable=False)
+
+    tipo_turno = Column(String, nullable=False)  
+    es_descanso = Column(Boolean, default=False)
 
     estado = Column(String, default="libre")  
     descripcion = Column(String, nullable=True)

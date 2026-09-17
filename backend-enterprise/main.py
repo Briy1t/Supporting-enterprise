@@ -27,9 +27,7 @@ from app.routes.alarmas import router as alarmas_router
 from app.routes.usuarios import router as usuarios_router
 from app.routes.contratos import router as contratos_router
 from app.routes.contratos_generar import router as contratos_generar_router
-from app.routes.tecnicos import router as tecnicos_router
 from app.routes.disponibilidad_tecnico import router as disponibilidad_router
-from app.routes.citas_tecnicos import router as citas_router
 from app.routes.calendario_tecnicos import router as calendario_router
 from app.routes.calendario_tecnico_personal import router as calendario_personal_router
 from app.routes.dashboard import router as dashboard_router
@@ -41,9 +39,6 @@ app = FastAPI(
 
 ensure_estado_column()
 
-# ---------------------------------------------------------
-# Montar carpeta estática para archivos y contratos
-# ---------------------------------------------------------
 os.makedirs("contratos_generados", exist_ok=True)
 os.makedirs("contratos_firmados", exist_ok=True)
 
@@ -58,9 +53,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ---------------------------------------------------------
-# Tarea Programada (CRON): Revisión de Vencimiento de Contratos
-# ---------------------------------------------------------
 def revisar_vencimiento_contratos():
     db: Session = SessionLocal()
     try:
@@ -90,14 +82,13 @@ def revisar_vencimiento_contratos():
     finally:
         db.close()
 
-# Iniciar el programador de tareas
+
 scheduler = BackgroundScheduler()
-# Ejecuta la función todos los días a las 09:00 AM
+
 scheduler.add_job(revisar_vencimiento_contratos, 'cron', hour=9, minute=0)
 scheduler.start()
 
 
-# Routers
 app.include_router(auth_router)
 app.include_router(clientes_router)
 app.include_router(admin_forms_router)
@@ -108,9 +99,7 @@ app.include_router(alarmas_router)
 app.include_router(usuarios_router)
 app.include_router(contratos_router)
 app.include_router(contratos_generar_router)
-app.include_router(tecnicos_router)
 app.include_router(disponibilidad_router)
-app.include_router(citas_router)
 app.include_router(calendario_router)
 app.include_router(calendario_personal_router)
 app.include_router(dashboard_router)

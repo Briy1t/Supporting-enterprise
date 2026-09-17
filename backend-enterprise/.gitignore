@@ -24,6 +24,7 @@ alembic/versions/__pycache__/
 contratos_firmados/
 uploads/
 contratos_generados/
+generate_docs.py
 
 # Cache
 .cache/

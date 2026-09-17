@@ -6,21 +6,6 @@ from app.schemas.disponibilidad_tecnico import DisponibilidadCreate, Disponibili
 
 router = APIRouter(prefix="/tecnicos")
 
-@router.post("/{tecnico_id}/disponibilidad", response_model=DisponibilidadResponse)
-def crear_slot(tecnico_id: int, data: DisponibilidadCreate, db: Session = Depends(get_db)):
-    slot = DisponibilidadTecnico(
-        tecnico_id=tecnico_id,
-        fecha=data.fecha,
-        hora_inicio=data.hora_inicio,
-        hora_fin=data.hora_fin,
-        estado=data.estado,
-        descripcion=data.descripcion
-    )
-    db.add(slot)
-    db.commit()
-    db.refresh(slot)
-    return slot
-
 @router.post("/{tecnico_id}/disponibilidad")
 def crear_disponibilidad(tecnico_id: int, data: DisponibilidadCreate, db: Session = Depends(get_db)):
     slot = DisponibilidadTecnico(
@@ -28,6 +13,8 @@ def crear_disponibilidad(tecnico_id: int, data: DisponibilidadCreate, db: Sessio
         fecha=data.fecha,
         hora_inicio=data.hora_inicio,
         hora_fin=data.hora_fin,
+        tipo_turno=data.tipo_turno,
+        es_descanso=data.es_descanso,                            
         descripcion=data.descripcion,
         estado="libre"
     )

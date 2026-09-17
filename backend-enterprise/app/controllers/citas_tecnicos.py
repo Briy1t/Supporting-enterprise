@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from datetime import datetime, timedelta
 
 from app.database import get_db
 from app.models.cita_tecnico import CitaTecnico
@@ -23,10 +24,15 @@ def crear_cita(tecnico_id: int, data: CitaCreate, db: Session = Depends(get_db))
     if not cliente:
         raise HTTPException(404, "Cliente no encontrado")
 
+    fecha = data.fecha.date()
+    hora_inicio = data.fecha.time()
+    hora_fin = (datetime.combine(fecha, hora_inicio) + timedelta(hours=1)).time()
+
     slot = db.query(DisponibilidadTecnico).filter(
         DisponibilidadTecnico.tecnico_id == tecnico_id,
-        DisponibilidadTecnico.fecha == data.fecha,
-        DisponibilidadTecnico.hora_inicio == data.hora_inicio,
+        DisponibilidadTecnico.fecha == fecha,
+        DisponibilidadTecnico.hora_inicio <= hora_inicio,
+        DisponibilidadTecnico.hora_fin >= hora_fin,
         DisponibilidadTecnico.estado == "libre"
     ).first()
 
@@ -38,10 +44,11 @@ def crear_cita(tecnico_id: int, data: CitaCreate, db: Session = Depends(get_db))
     cita = CitaTecnico(
         tecnico_id=tecnico_id,
         cliente_id=data.cliente_id,
-        fecha=data.fecha,
-        hora_inicio=data.hora_inicio,
-        hora_fin=data.hora_fin,
+        fecha=fecha,
+        hora_inicio=hora_inicio,
+        hora_fin=hora_fin,
         motivo=data.motivo,
+        estado="pendiente",
         ticket_id=data.ticket_id,
         slot_id=slot.id
     )
@@ -50,7 +57,6 @@ def crear_cita(tecnico_id: int, data: CitaCreate, db: Session = Depends(get_db))
     db.commit()
     db.refresh(cita)
     return cita
-
 
 @router.get("/{tecnico_id}/citas", response_model=list[CitaResponse])
 def listar_citas(tecnico_id: int, db: Session = Depends(get_db)):

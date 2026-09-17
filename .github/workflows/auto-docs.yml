@@ -22,6 +22,19 @@ jobs:
           mkdir -p docs/changelog/$YEAR-$MONTH
           mkdir -p docs/operations/$YEAR-$MONTH
 
+      - name: Generar diagrama de base de datos (PostgreSQL)
+        run: |
+          pip install eralchemy psycopg2-binary
+          mkdir -p docs/db
+
+          # Generar diagrama ER desde PostgreSQL
+          eralchemy -i "postgresql+psycopg2://USUARIO:CONTRASEÑA@HOST:PUERTO/NOMBRE_DB" -o docs/db/schema.png
+
+          # Crear archivo Markdown con referencia al diagrama
+          echo "# 🗂️ Diagrama de Base de Datos" > docs/db/schema.md
+          echo "![Estructura de tablas](schema.png)" >> docs/db/schema.md
+
+
       - name: Mover archivos del día a carpetas mensuales
         run: |
           YEAR=$(date +'%Y')

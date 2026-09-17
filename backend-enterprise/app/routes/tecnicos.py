@@ -34,7 +34,9 @@ def crear_tecnico(data: TecnicoCreate, db: Session = Depends(get_db)):
         especialidad=data.especialidad,
         descripcion=data.descripcion,
         email=data.email,
-        password=hash_password(data.password)
+        password=hash_password(data.password),
+        turno_hora_inicio=data.turno_hora_inicio,
+        turno_hora_fin=data.turno_hora_fin,
     )
     db.add(nuevo)
     db.commit()
@@ -67,48 +69,41 @@ def eliminar_tecnico_route(tecnico_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Técnico no encontrado")
     return {"mensaje": "Técnico eliminado"}
 
-@router.post("/{tecnico_id}/citas")
+@router.post("/{tecnico_id}/citas", response_model=CitaResponse)
 def crear_cita(tecnico_id: int, data: CitaCreate, db: Session = Depends(get_db)):
+
+    fecha_inicio: datetime = data.fecha
+    fecha_fin: datetime = fecha_inicio + timedelta(hours=1)
+
+    slot = db.query(DisponibilidadTecnico).filter(
+        DisponibilidadTecnico.tecnico_id == tecnico_id,
+        DisponibilidadTecnico.hora_inicio <= fecha_inicio,
+        DisponibilidadTecnico.hora_fin >= fecha_fin,
+        DisponibilidadTecnico.estado == "libre"
+    ).first()
+
+    if not slot:
+        raise HTTPException(
+            status_code=400,
+            detail="El técnico no tiene disponibilidad en ese horario"
+        )
+
+    slot.estado = "reservado"
+
     cita = CitaTecnico(
         tecnico_id=tecnico_id,
         cliente_id=data.cliente_id,
-        fecha=data.fecha,
-        motivo=data.motivo
+        fecha=fecha_inicio,
+        hora_inicio=fecha_inicio,
+        hora_fin=fecha_fin,
+        motivo=data.motivo,
+        ticket_id=data.ticket_id,
+        slot_id=slot.id
     )
+
     db.add(cita)
     db.commit()
     db.refresh(cita)
+
     return cita
 
-@router.get("/{tecnico_id}/calendario", response_model=list[EventoResponse])
-def calendario_tecnico(tecnico_id: int, db: Session = Depends(get_db)):
-    disponibilidad = db.query(DisponibilidadTecnico).filter(
-        DisponibilidadTecnico.tecnico_id == tecnico_id
-    ).all()
-
-    citas = db.query(CitaTecnico).filter(
-        CitaTecnico.tecnico_id == tecnico_id
-    ).all()
-
-    eventos = []
-
-    # Disponibilidad / Turnos
-    for d in disponibilidad:
-        fecha_completa = datetime.combine(d.fecha, d.hora_inicio)
-        eventos.append({
-            "id": d.id,
-            "titulo": d.descripcion or "Turno",
-            "fecha": fecha_completa,
-            "tipo": "turno"
-        })
-
-    # Citas
-    for c in citas:
-        eventos.append({
-            "id": c.id,
-            "titulo": c.motivo,
-            "fecha": c.fecha,
-            "tipo": "cita"
-        })
-
-    return eventos

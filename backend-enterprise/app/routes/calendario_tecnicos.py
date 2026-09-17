@@ -1,3 +1,4 @@
+from datetime import datetime
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
@@ -8,37 +9,33 @@ from app.models.cita_tecnico import CitaTecnico
 router = APIRouter(prefix="/tecnicos", tags=["Calendario Técnico"])
 
 @router.get("/{tecnico_id}/calendario")
-def calendario_admin(tecnico_id: int, db: Session = Depends(get_db)):
-    disponibilidad = db.query(DisponibilidadTecnico).filter(
-        DisponibilidadTecnico.tecnico_id == tecnico_id
-    ).all()
+def calendario_tecnico(tecnico_id: int, db: Session = Depends(get_db)):
+    eventos = []
 
     citas = db.query(CitaTecnico).filter(
         CitaTecnico.tecnico_id == tecnico_id
     ).all()
 
-    eventos = []
-
-    # Disponibilidad
-    for slot in disponibilidad:
+    for c in citas:
         eventos.append({
-            "id": slot.id,
-            "tipo": "slot",
-            "titulo": "Disponibilidad",
-            "descripcion": slot.descripcion or "Slot disponible",
-            "fecha": str(slot.fecha),
-            "cliente_id": None
+            "id": c.id,
+            "titulo": c.motivo,
+            "tipo": "cita",
+            "start": datetime.combine(c.fecha, c.hora_inicio).isoformat(),
+            "end": datetime.combine(c.fecha, c.hora_fin).isoformat()
         })
 
-    # Citas
-    for cita in citas:
+    slots = db.query(DisponibilidadTecnico).filter(
+        DisponibilidadTecnico.tecnico_id == tecnico_id
+    ).all()
+
+    for s in slots:
         eventos.append({
-            "id": cita.id,
-            "tipo": "cita",
-            "titulo": "Cita programada",
-            "descripcion": cita.motivo or "Sin descripción",
-            "fecha": str(cita.fecha),
-            "cliente_id": cita.cliente_id
+            "id": s.id,
+            "titulo": s.descripcion or s.tipo_turno,
+            "tipo": "descanso" if s.es_descanso else "turno",
+            "start": datetime.combine(s.fecha, s.hora_inicio).isoformat(),
+            "end": datetime.combine(s.fecha, s.hora_fin).isoformat()
         })
 
     return eventos

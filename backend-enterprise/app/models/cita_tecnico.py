@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date, Time, ForeignKey
+from sqlalchemy import Column, Integer, String, Date, Time, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from app.database import Base
 
@@ -10,8 +10,8 @@ class CitaTecnico(Base):
     cliente_id = Column(Integer, ForeignKey("clientes.id"), nullable=False)
 
     fecha = Column(Date, nullable=False)
-    hora_inicio = Column(Time, nullable=False)
-    hora_fin = Column(Time, nullable=False)
+    hora_inicio = Column(DateTime, nullable=False)
+    hora_fin = Column(DateTime, nullable=False)
 
     estado = Column(String, default="pendiente")
     motivo = Column(String, nullable=True)

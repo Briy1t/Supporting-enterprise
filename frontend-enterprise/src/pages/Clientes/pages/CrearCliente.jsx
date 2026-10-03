@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import Sidebar from "../components/Sidebar";
+import Sidebar from "../../../components/Sidebar";
 import { ArrowLeft, CheckCircle2, ShieldCheck, Loader2, UserPlus } from "lucide-react";
 
 export default function CrearCliente() {
@@ -144,12 +144,10 @@ export default function CrearCliente() {
           </button>
         </div>
 
-        {/* CONTENEDOR DEL FORMULARIO CON MAQUETACIÓN PREMIUM */}
         <form onSubmit={handleSubmit} className="tw-form-container">
           
           <div className="tw-form-grid">
             
-            {/* Empresa (Ocupa las 2 columnas) */}
             <div className="tw-form-group-full">
               <label className="tw-form-label">
                 Empresa <span className="tw-form-label-optional">(Opcional)</span>
@@ -190,7 +188,7 @@ export default function CrearCliente() {
               />
             </div>
 
-            {/* Teléfono */}
+
             <div className="tw-form-group">
               <label className="tw-form-label">Teléfono</label>
               <input 
@@ -203,7 +201,6 @@ export default function CrearCliente() {
               />
             </div>
 
-            {/* Preferencia de contacto */}
             <div className="tw-form-group">
               <label className="tw-form-label">Preferencia de contacto</label>
               <select 
@@ -218,7 +215,6 @@ export default function CrearCliente() {
               </select>
             </div>
 
-            {/* Servicios Vinculados en el Contrato (Ocupa las 2 columnas) */}
             <div className="tw-form-group-full">
               <label className="tw-form-label">
                 <ShieldCheck className="w-4 h-4 text-blue-600 shrink-0" />
@@ -248,7 +244,6 @@ export default function CrearCliente() {
 
           </div>
 
-          {/* Botón de envío alineado de manera elegante */}
           <button type="submit" className="tw-btn-submit">
             Guardar Cliente
           </button>

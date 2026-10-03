@@ -11,7 +11,6 @@ export default function Administracion() {
       <Sidebar />
 
       <main className="tw-layout-content space-y-6">
-        {/* Cabecera */}
         <div className="flex items-center justify-between pb-4 border-b border-slate-200">
           <div>
             <h1 className="text-2xl font-bold text-slate-900 flex items-center">
@@ -30,7 +29,6 @@ export default function Administracion() {
           </button>
         </div>
 
-        {/* Tablero Kanban */}
         <section>
           <Kanban />
         </section>

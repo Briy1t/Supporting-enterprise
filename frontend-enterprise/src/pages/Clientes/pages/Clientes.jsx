@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import Sidebar from "../components/Sidebar";
+import Sidebar from "../../../components/Sidebar";
 import { ArrowLeft, Eye, Edit3, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 

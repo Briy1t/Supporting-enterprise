@@ -24,13 +24,10 @@ export default function LeadCard({ lead, cambiarEstado, descartar }) {
   return (
     <>
       <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
-        {/* Nombre */}
         <h4 className="font-bold text-slate-900 text-base">{lead.contacto}</h4>
 
-        {/* Datos de contacto */}
         <div className="space-y-2 text-xs text-slate-600">
           
-          {/* Correo Electrónico (Con botón azul interactivo) */}
           <div className="flex items-center gap-2">
             <a
               href={`https://mail.google.com/mail/?view=cm&fs=1&to=${lead.correo}`}
@@ -50,7 +47,6 @@ export default function LeadCard({ lead, cambiarEstado, descartar }) {
             </a>
           </div>
 
-          {/* Teléfono Clickeable para Llamar */}
           {lead.telefono && lead.telefono.trim() !== "" ? (
             <div className="flex items-center gap-2">
               <a
@@ -77,14 +73,13 @@ export default function LeadCard({ lead, cambiarEstado, descartar }) {
           )}
         </div>
 
-        {/* Mensaje */}
+
         {lead.mensaje && (
           <div className="p-2 bg-slate-50 rounded-lg text-xs text-slate-600 italic border border-slate-100">
             "{lead.mensaje}"
           </div>
         )}
 
-        {/* Grid de Botones */}
         <div className="pt-2 border-t border-slate-100 grid grid-cols-2 gap-2">
           <button
             onClick={() => cambiarEstado(lead.id, "llamado")}
@@ -132,7 +127,6 @@ export default function LeadCard({ lead, cambiarEstado, descartar }) {
         </div>
       </div>
 
-      {/* MODAL DE CONFIRMACIÓN DE ELIMINACIÓN */}
       {mostrarModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4">
           <div className="bg-white rounded-2xl p-6 max-w-sm w-full border border-slate-100 shadow-xl space-y-4 animate-in fade-in zoom-in-95 duration-150">

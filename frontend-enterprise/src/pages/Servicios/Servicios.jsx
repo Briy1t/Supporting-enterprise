@@ -40,7 +40,7 @@ export default function ServiciosPage() {
       <Sidebar />
 
       <main className="tw-layout-content space-y-6">
-        {/* CABECERA */}
+  
         <div className="flex items-center justify-between pb-4 border-b border-slate-200">
           <div>
             <h1 className="text-2xl font-bold text-slate-900 flex items-center">
@@ -68,7 +68,7 @@ export default function ServiciosPage() {
           </div>
         </div>
 
-        {/* GRID DE SERVICIOS */}
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {servicios.map((s) => (
             <ServicioCard
@@ -80,7 +80,6 @@ export default function ServiciosPage() {
           ))}
         </div>
 
-        {/* FORMULARIO */}
         {mostrarForm && (
           <ServicioForm
             servicio={servicioEditar}
@@ -92,7 +91,6 @@ export default function ServiciosPage() {
           />
         )}
 
-        {/* MODAL ELIMINAR */}
         {modal.visible && (
           <ModalConfirmacion
             accion={modal.accion}

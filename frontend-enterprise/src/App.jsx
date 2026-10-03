@@ -1,10 +1,14 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
-import Clientes from "./pages/Clientes";
+
+import Clientes from "./pages/Clientes/pages/Clientes";
+import CrearCliente from "./pages/Clientes/pages/CrearCliente";
+import EditarCliente from "./pages/Clientes/pages/EditarCliente";
+import ClienteDetalle from "./pages/Clientes/pages/ClienteDetalle";
+
 import Servicios from "./pages/Servicios/Servicios";
 import Alertas from "./pages/Alertas";
 import Administracion from "./pages/Administracion/Administracion";
-import CrearCliente from "./pages/CrearCliente";
 import Contratos from "./pages/Contratos/Contratos";
 
 import TecnicosList from "./pages/Tecnicos/pages/TecnicosList";
@@ -27,6 +31,10 @@ function App() {
 
         <Route path="/" element={<Index />} />
         <Route path="/clientes" element={<Clientes />} />
+        <Route path="/crear-cliente" element={<CrearCliente />} />
+        <Route path="/editar-cliente/:id" element={<EditarCliente />} />
+        <Route path="/clientes/:id" element={<ClienteDetalle />} />
+        
         <Route path="/tecnicos" element={<TecnicosList />} />
         <Route path="/tecnicos/crear" element={<CrearTecnico />} />
         <Route path="/tecnicos/:id" element={<TecnicoDetalle />} />
@@ -40,7 +48,6 @@ function App() {
         <Route path="/servicios" element={<Servicios />} />
         <Route path="/alertas" element={<Alertas />} />
         <Route path="/administracion" element={<Administracion />} />
-        <Route path="/crear-cliente" element={<CrearCliente />} />
         <Route path="/contratos" element={<Contratos />} />
 
  

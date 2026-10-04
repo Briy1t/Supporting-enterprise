@@ -1,0 +1,46 @@
+name: Auto Technical Index
+
+on:
+  push:
+    paths:
+      - "docs/technical/**"
+
+jobs:
+  generate-technical-index:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v3
+
+      - name: Generar SUMMARY.md para technical
+        run: |
+          echo "# Technical Documentation Summary" > docs/technical/SUMMARY.md
+          echo "" >> docs/technical/SUMMARY.md
+
+          echo "## Backend Enterprise" >> docs/technical/SUMMARY.md
+          for file in docs/technical/backend-enterprise/*.md; do
+            filename=$(basename "$file")
+            echo "- [$filename](backend-enterprise/$filename)" >> docs/technical/SUMMARY.md
+          done
+
+          echo "" >> docs/technical/SUMMARY.md
+          echo "## Frontend Enterprise" >> docs/technical/SUMMARY.md
+          for file in docs/technical/frontend-enterprise/*.md; do
+            filename=$(basename "$file")
+            echo "- [$filename](frontend-enterprise/$filename)" >> docs/technical/SUMMARY.md
+          done
+
+      - name: Commit automático del índice técnico
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add docs/technical/SUMMARY.md
+
+          if git diff-index --quiet HEAD; then
+            echo "No hay cambios en technical."
+          else
+            git commit -m "docs: actualización automática de SUMMARY.md en technical"
+            git push origin HEAD:${{ github.ref }}
+          fi

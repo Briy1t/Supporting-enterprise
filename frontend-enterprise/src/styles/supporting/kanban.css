@@ -1,0 +1,137 @@
+/* =======================================================
+   1. ESTRUCTURA GENERAL DEL LAYOUT (ANCHO COMPLETO Y FLEXIBLE)
+   ======================================================= */
+@utility tw-layout {
+  @apply flex min-h-screen bg-slate-50 w-full overflow-x-hidden;
+}
+
+@utility tw-layout-content {
+  /* Se eliminó el max-w-7xl limitante para liberar todo el ancho de la pantalla */
+  @apply flex-1 p-6 sm:p-8 w-full flex flex-col min-w-0;
+}
+
+
+/* =======================================================
+   2. MÓDULO DE ADMINISTRACIÓN (KANBAN - 4 COLUMNAS AUTOMÁTICAS)
+   ======================================================= */
+@utility tw-kanban-container {
+  /* Distribución exacta en cuadrícula para las 4 columnas */
+  @apply grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 w-full items-start py-4;
+}
+
+@utility tw-kanban-column {
+  /* Flexibilidad absoluta para ocupar el 100% del espacio asignado por el grid */
+  @apply w-full bg-slate-50/60 rounded-xl p-5 border border-slate-200/80 flex flex-col min-h-[450px];
+}
+
+@utility tw-kanban-title-container {
+  @apply flex justify-between items-center mb-4 pb-2 border-b border-gray-100;
+}
+
+@utility tw-kanban-title {
+  @apply text-gray-700 font-bold text-sm uppercase tracking-wider;
+}
+
+@utility tw-kanban-counter {
+  @apply text-xs px-2.5 py-0.5 rounded-full font-bold transition-all;
+}
+
+
+/* TARJETAS DE LEAD */
+@utility tw-lead-card {
+  @apply bg-white p-5 rounded-xl mb-4 border border-slate-200/60 shadow-sm flex flex-col gap-3 hover:shadow-md transition-shadow;
+}
+
+@utility tw-lead-name {
+  @apply font-bold text-slate-800 text-base capitalize;
+}
+
+@utility tw-lead-info {
+  @apply flex items-center gap-2 text-xs text-slate-600 break-all;
+}
+
+@utility tw-lead-badge {
+  @apply inline-block text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium border border-slate-200/60 w-max mt-1 italic;
+}
+
+@utility tw-lead-actions {
+  /* Distribución en 2 columnas simétricas para los 6 botones */
+  @apply grid grid-cols-2 gap-2 mt-2 w-full pt-3 border-t border-slate-100;
+}
+
+
+/* BOTONES DE ACCIÓN (ESTILO MÍNIMO Y ESTÉTICO) */
+@utility tw-btn {
+  @apply w-full px-2 py-1.5 rounded-md text-xs font-semibold flex items-center justify-center gap-1.5 transition-all border shadow-sm cursor-pointer;
+}
+
+@utility tw-btn-llamado { @apply bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100; }
+@utility tw-btn-esperando { @apply bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100; }
+@utility tw-btn-concretado { @apply bg-emerald-50 text-emerald-600 border-emerald-200 hover:bg-emerald-100; }
+@utility tw-btn-contrato { @apply bg-indigo-50 text-indigo-600 border-indigo-200 hover:bg-indigo-100; }
+@utility tw-btn-cliente { @apply bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100; }
+@utility tw-btn-descartar { @apply bg-rose-50 text-rose-600 border-rose-200 hover:bg-rose-100; }
+
+
+/* =======================================================
+   3. MÓDULO DE SERVICIOS (MÉTRICAS Y CATÁLOGO PREMIUM)
+   ======================================================= */
+
+/* Sección superior de KPI */
+@utility tw-metrics-grid {
+  @apply grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8 w-full;
+}
+
+@utility tw-metric-card {
+  @apply bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between transition-all duration-200 hover:shadow-md w-full;
+}
+
+@utility tw-metric-title {
+  @apply text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1;
+}
+
+@utility tw-metric-value {
+  @apply text-3xl font-black text-slate-800 tracking-tight block;
+}
+
+@utility tw-metric-icon-box {
+  @apply p-3.5 rounded-xl shrink-0 flex items-center justify-center border;
+}
+
+@utility tw-metric-icon-blue { @apply bg-blue-50 text-blue-600 border-blue-100; }
+@utility tw-metric-icon-emerald { @apply bg-emerald-50 text-emerald-600 border-emerald-100; }
+@utility tw-metric-icon-amber { @apply bg-amber-50 text-amber-600 border-amber-100; }
+
+
+/* Catálogo de Servicios */
+@utility tw-services-catalog-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 w-full mt-4;
+}
+
+@utility tw-service-card {
+  @apply bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between hover:shadow-md hover:border-slate-300 transition-all duration-200 min-h-[190px];
+}
+
+@utility tw-service-title {
+  @apply font-bold text-slate-800 text-base lg:text-lg capitalize tracking-tight;
+}
+
+@utility tw-service-desc {
+  @apply text-slate-500 text-sm mt-2 line-clamp-2 leading-relaxed font-normal;
+}
+
+@utility tw-badge-active {
+  @apply text-[11px] font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0;
+}
+
+@utility tw-badge-inactive {
+  @apply text-[11px] font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-500 border border-slate-200 shrink-0;
+}
+
+@utility tw-service-footer {
+  @apply flex items-center justify-between mt-6 pt-4 border-t border-slate-100 w-full;
+}
+
+@utility tw-service-price {
+  @apply text-base font-bold text-slate-900 tracking-tight;
+}

@@ -1,0 +1,47 @@
+name: Auto ADR Index
+
+on:
+  push:
+    paths:
+      - "docs/ADR/**"
+
+jobs:
+  generate-adr-index:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v3
+
+      - name: Generar ADR_INDEX.md
+        run: |
+          echo "# ADR Index" > docs/ADR/ADR_INDEX.md
+          echo "" >> docs/ADR/ADR_INDEX.md
+
+          for folder in docs/ADR/*; do
+            if [ -d "$folder" ]; then
+              foldername=$(basename "$folder")
+              echo "## $foldername" >> docs/ADR/ADR_INDEX.md
+
+              for file in $folder/*.md; do
+                filename=$(basename "$file")
+                echo "- [$filename]($foldername/$filename)" >> docs/ADR/ADR_INDEX.md
+              done
+
+              echo "" >> docs/ADR/ADR_INDEX.md
+            fi
+          done
+
+      - name: Commit automático del índice ADR
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add docs/ADR/ADR_INDEX.md
+
+          if git diff-index --quiet HEAD; then
+            echo "No hay cambios en ADR."
+          else
+            git commit -m "docs: actualización automática de ADR_INDEX.md"
+            git push origin HEAD:${{ github.ref }}
+          fi

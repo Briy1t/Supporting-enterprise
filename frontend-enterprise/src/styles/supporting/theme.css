@@ -1,0 +1,90 @@
+
+
+@theme {
+  --color-supporting: #0f172a;           
+  --color-supporting-light: #f8fafc;     
+  --color-supporting-gray: #e2e8f0;     
+  --color-supporting-accent: #3b82f6;    
+  --font-poppins: "Poppins", system-ui, sans-serif;
+}
+
+:root {
+  font-family: var(--font-poppins);
+}
+
+@utility tw-brand-icon {
+  display: inline-block;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  /* SVG vectorial del LayoutDashboard de Lucide en color Azul #3b82f6 */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%233b82f6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='7' height='9' x='3' y='3' rx='1'/%3E%3Crect width='7' height='5' x='14' y='3' rx='1'/%3E%3Crect width='7' height='9' x='14' y='12' rx='1'/%3E%3Crect width='7' height='5' x='3' y='16' rx='1'/%3E%3C/svg%3E");
+}
+
+@layer utilities {
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes scaleIn {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .animate-fadeIn {
+    animation: fadeIn 0.25s ease-out;
+  }
+
+  .animate-scaleIn {
+    animation: scaleIn 0.25s ease-out;
+  }
+}
+
+/* Contenedor del calendario */
+.tw-calendar {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid #e5e7eb;
+}
+
+/* Disponibilidad */
+.fc-event-disponibilidad {
+  background-color: #3b82f6 !important;
+  border-color: #2563eb !important;
+  color: white !important;
+}
+
+/* Citas */
+.fc-event-cita {
+  background-color: #22c55e !important;
+  border-color: #16a34a !important;
+  color: white !important;
+}
+
+/* Turnos */
+.fc-event-turno {
+  background-color: #6b7280 !important;
+  border-color: #4b5563 !important;
+  color: white !important;
+}
+
+/* Botón volver */
+.tw-back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #e5e7eb;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  cursor: pointer;
+}

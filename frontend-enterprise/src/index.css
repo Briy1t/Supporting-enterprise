@@ -1,0 +1,19 @@
+/* index.css */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");
+
+@import "tailwindcss";
+
+@import "./styles/supporting/theme.css";
+
+@import "./styles/supporting/layout.css";
+@import "./styles/supporting/sidebar.css";
+@import "./styles/supporting/navbar.css";
+@import "./styles/supporting/dashboard.css";
+@import "./styles/supporting/buttons.css";
+@import "./styles/supporting/services.css";
+@import "./styles/supporting/kanban.css";
+@import "./styles/supporting/cards.css";
+@import "./styles/supporting/tables.css";
+@import "./styles/supporting/cliente.css";
+@import "./styles/supporting/tecnico_calendario.css";
+@import "./styles/supporting/tecnico_modal.css";

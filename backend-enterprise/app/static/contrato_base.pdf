@@ -1,0 +1,227 @@
+import os
+from datetime import datetime
+from fpdf import FPDF
+
+class PDFContrato(FPDF):
+    def header(self):
+        # Logo institucional con fallback
+        try:
+            self.image("logo_supporting.png", x=10, y=8, w=22)
+            self.set_xy(36, 10)
+        except Exception:
+            self.set_xy(10, 10)  # Si no hay logo, alinea a la izquierda
+
+        # Encabezado corporativo
+        self.set_font("Helvetica", "B", 14)
+        self.set_text_color(15, 23, 42)  # Slate 900
+        self.cell(0, 6, "SUPPORTING", ln=True)
+
+        self.set_x(self.get_x())
+        self.set_font("Helvetica", "", 9)
+        self.set_text_color(100, 116, 139)  # Slate 500
+        self.cell(0, 5, "Servicios & Soluciones Tecnológicas IT", ln=True)
+
+        # Línea divisoria azul corporativo (#3b82f6)
+        self.set_draw_color(59, 130, 246)
+        self.set_line_width(0.6)
+        self.line(10, 26, 200, 26)
+
+        self.ln(12)
+
+    def footer(self):
+        self.set_y(-18)
+        self.set_font("Helvetica", "I", 8)
+        self.set_text_color(148, 163, 184)  # Slate 400
+
+        # Pie de página
+        self.cell(0, 5, "SUPPORTING — Soluciones IT para empresas | contacto@supporting.com", 0, 1, "C")
+        self.cell(0, 4, f"Página {self.page_no()}/{{nb}}", 0, 0, "C")
+
+
+def generar_pdf_contrato(lead, contrato):
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    pdf_dir = os.path.abspath(os.path.join(BASE_DIR, "..", "..", "contratos_generados"))
+    os.makedirs(pdf_dir, exist_ok=True)
+
+    ruta = os.path.abspath(os.path.join(pdf_dir, f"contrato_{contrato.id}.pdf"))
+
+    pdf = PDFContrato()
+    pdf.alias_nb_pages()
+    pdf.add_page()
+    pdf.set_auto_page_break(auto=True, margin=20)
+
+    # ---------------------------------------------------------
+    # TÍTULO PRINCIPAL
+    # ---------------------------------------------------------
+    pdf.set_font("Helvetica", "B", 15)
+    pdf.set_text_color(30, 41, 59)
+    pdf.cell(0, 8, "CONTRATO DE PRESTACIÓN DE SERVICIOS IT", ln=True, align="C")
+    
+    pdf.set_font("Helvetica", "", 9)
+    pdf.set_text_color(100, 116, 139)
+    pdf.cell(0, 5, f"Ref. Documento: CTR-{contrato.id:04d}", ln=True, align="C")
+    pdf.ln(4)
+
+    # ---------------------------------------------------------
+    # BLOQUE DE DATOS DEL CLIENTE
+    # ---------------------------------------------------------
+    pdf.set_fill_color(248, 250, 252)  # Fondo gris #f8fafc
+    pdf.set_draw_color(226, 232, 240)  # Borde #e2e8f0
+    pdf.set_line_width(0.3)
+
+    start_y = pdf.get_y()
+    pdf.rect(10, start_y, 190, 36, style="DF")
+
+    pdf.set_xy(14, start_y + 3)
+    pdf.set_font("Helvetica", "B", 10)
+    pdf.set_text_color(15, 23, 42)
+    pdf.cell(0, 6, "INFORMACIÓN DE LAS PARTES", ln=True)
+
+    pdf.set_font("Helvetica", "", 8.5)
+    pdf.set_text_color(51, 65, 85)
+
+    # Columna 1: Cliente
+    empresa_nombre = getattr(lead, 'empresa', 'N/A') or 'N/A'
+    contacto_nombre = getattr(lead, 'contacto', 'N/A') or 'N/A'
+    correo_val = getattr(lead, 'correo', 'N/A') or 'N/A'
+    telefono_val = getattr(lead, 'telefono', 'N/A') or 'N/A'
+
+    pdf.set_xy(14, start_y + 11)
+    pdf.cell(90, 5, f"Empresa: {empresa_nombre}", ln=True)
+    pdf.set_x(14)
+    pdf.cell(90, 5, f"Representante: {contacto_nombre}", ln=True)
+    pdf.set_x(14)
+    pdf.cell(90, 5, f"Correo: {correo_val}", ln=True)
+
+    # Columna 2: Detalles
+    fecha_emision = getattr(contrato, 'fecha_creacion', None)
+    fecha_str = fecha_emision.strftime('%d/%m/%Y') if fecha_emision else datetime.now().strftime('%d/%m/%Y')
+
+    pdf.set_xy(110, start_y + 11)
+    pdf.cell(86, 5, f"Teléfono: {telefono_val}", ln=True)
+    pdf.set_x(110)
+    pdf.cell(86, 5, f"Fecha Emisión: {fecha_str}", ln=True)
+    pdf.set_x(110)
+    pdf.cell(86, 5, f"Duración: {getattr(contrato, 'duracion', '12 meses')}", ln=True)
+
+    pdf.set_y(start_y + 40)
+
+    # ---------------------------------------------------------
+    # TABLA DE SERVICIOS
+    # ---------------------------------------------------------
+    pdf.set_font("Helvetica", "B", 10)
+    pdf.set_text_color(15, 23, 42)
+    pdf.cell(0, 7, "Servicios Contratados", ln=True)
+
+    # Encabezado Tabla
+    pdf.set_font("Helvetica", "B", 8.5)
+    pdf.set_fill_color(59, 130, 246)
+    pdf.set_text_color(255, 255, 255)
+    pdf.cell(145, 6, "  Descripción del Servicio", border=0, ln=False, align="L", fill=True)
+    pdf.cell(45, 6, "Estado ", border=0, ln=True, align="C", fill=True)
+
+    # Filas
+    pdf.set_font("Helvetica", "", 8.5)
+    pdf.set_text_color(51, 65, 85)
+
+    servicios_lista = getattr(contrato, 'servicios', [])
+    if not isinstance(servicios_lista, list):
+        servicios_lista = [str(servicios_lista)]
+
+    for i, servicio in enumerate(servicios_lista):
+        bg = (248, 250, 252) if i % 2 == 0 else (255, 255, 255)
+        pdf.set_fill_color(*bg)
+        pdf.cell(145, 6, f"   {servicio}", border="B", ln=False, fill=True)
+        pdf.cell(45, 6, "Incluido", border="B", ln=True, align="C", fill=True)
+
+    pdf.ln(6)
+
+    # ---------------------------------------------------------
+    # TÉRMINOS Y POLÍTICAS
+    # ---------------------------------------------------------
+    pdf.set_font("Helvetica", "B", 10)
+    pdf.set_text_color(15, 23, 42)
+    pdf.cell(0, 7, "Términos y Cláusulas Legales", ln=True)
+
+    pdf.set_font("Helvetica", "", 8)
+    pdf.set_text_color(71, 85, 105)
+
+    politicas_custom = getattr(contrato, 'politicas', None)
+    
+    if politicas_custom and len(politicas_custom.strip()) > 0:
+        pdf.multi_cell(0, 4, politicas_custom)
+        pdf.ln(2)
+    else:
+        clausulas = [
+            ("1. Objeto del contrato", "SUPPORTING se compromete a prestar los servicios IT detallados en el presente documento, garantizando la máxima calidad, continuidad e infraestructura técnica especializada."),
+            ("2. Confidencialidad", "Ambas partes garantizan la estricta confidencialidad de la información técnica, comercial o de negocio intercambiada durante y después del periodo contractual."),
+            ("3. Protección de Datos (RGPD)", "En cumplimiento del RGPD, los datos tratados serán incorporados únicamente para la correcta gestión de la relación de servicios contractual."),
+            ("4. Obligaciones del Cliente", "El cliente facilitará el acceso necesario a los sistemas para las labores de mantenimiento y seguirá las pautas de seguridad recomendadas."),
+            ("5. Obligaciones del Proveedor", "SUPPORTING mantendrá monitoreado el servicio conforme a las métricas del plan contratado e informará de incidencias críticas de inmediato."),
+            ("6. Jurisdicción", "Para cualquier controversia, las partes acuerdan someterse expresamente a los Juzgados y Tribunales de Castellón, España.")
+        ]
+        for titulo, texto in clausulas:
+            pdf.set_font("Helvetica", "B", 8)
+            pdf.cell(0, 4, titulo, ln=True)
+            pdf.set_font("Helvetica", "", 8)
+            pdf.multi_cell(0, 4, texto)
+            pdf.ln(1)
+
+    pdf.ln(4)
+
+    # ---------------------------------------------------------
+    # FIRMAS Y SELLO CORPORATIVO
+    # ---------------------------------------------------------
+    if pdf.get_y() > 215:
+        pdf.add_page()
+
+    pdf.set_font("Helvetica", "B", 9.5)
+    pdf.set_text_color(15, 23, 42)
+    pdf.cell(0, 6, "Aceptación y Conformidad", ln=True)
+    pdf.ln(14)
+
+    y_firma = pdf.get_y()
+
+    # Columna Izquierda: Cliente (Espacio libre para firmar)
+    pdf.set_xy(10, y_firma)
+    pdf.line(10, y_firma, 90, y_firma)
+    pdf.set_xy(10, y_firma + 2)
+    pdf.set_font("Helvetica", "B", 8.5)
+    pdf.cell(80, 4, "Por el Cliente:", ln=True)
+    pdf.set_font("Helvetica", "", 8)
+    pdf.set_x(10)
+    pdf.cell(80, 4, f"D./Dña. {contacto_nombre}", ln=True)
+    pdf.set_x(10)
+    pdf.cell(80, 4, f"Empresa: {empresa_nombre}", ln=True)
+
+    # Columna Derecha: Proveedor (Con sello digital visual)
+    # Dibujo del Sello Corporativo
+    pdf.set_draw_color(29, 78, 216)  # Azul oscuro #1d4ed8
+    pdf.set_line_width(0.4)
+    pdf.rect(132, y_firma - 13, 36, 11)  # Caja del sello
+    pdf.set_xy(132, y_firma - 12)
+    pdf.set_font("Helvetica", "B", 6.5)
+    pdf.set_text_color(29, 78, 216)
+    pdf.cell(36, 3, "SUPPORTING IT", align="C", ln=True)
+    pdf.set_x(132)
+    pdf.set_font("Helvetica", "", 5.5)
+    pdf.cell(36, 3, "FIRMA DIGITALIZADA", align="C", ln=True)
+    pdf.set_x(132)
+    pdf.cell(36, 3, "VERIFICADO", align="C", ln=True)
+
+    # Línea y texto del Proveedor
+    pdf.set_draw_color(226, 232, 240)
+    pdf.line(110, y_firma, 190, y_firma)
+    pdf.set_xy(110, y_firma + 2)
+    pdf.set_font("Helvetica", "B", 8.5)
+    pdf.set_text_color(15, 23, 42)
+    pdf.cell(80, 4, "Por el Proveedor (SUPPORTING):", ln=True)
+    pdf.set_font("Helvetica", "", 8)
+    pdf.set_x(110)
+    pdf.cell(80, 4, "Representante Autorizado IT", ln=True)
+    pdf.set_x(110)
+    pdf.cell(80, 4, "SUPPORTING Solutions S.L.", ln=True)
+
+    # Guardar documento
+    pdf.output(ruta)
+    return ruta
